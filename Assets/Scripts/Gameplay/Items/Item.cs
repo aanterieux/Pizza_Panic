@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Item : MonoBehaviour
 {
+    protected delegate void OnPickupDelegate(object _optional = null);
+    protected delegate void OnReleaseDelegate(object _optional = null);
+
     [Header("-- Item --")]
     [SerializeField] [Min(0.01f)]
     private float hitboxFactor = 1.25f;
@@ -11,10 +14,19 @@ public class Item : MonoBehaviour
     private float baseHeight = 2f;
     private float hitboxFactorCpy = 0f;
     private bool hitboxAdjustmentTrigger = false;
+    private bool isPickedUp = false;
+
+    protected OnPickupDelegate pickupDelegate_ = null;
+    protected OnReleaseDelegate releaseDelegate_ = null;
 
     protected bool HitboxAdjustmentTrigger_
     {
         get => hitboxAdjustmentTrigger;
+    }
+
+    public bool IsPickedUp
+    {
+        get => isPickedUp;
     }
 
     protected void OnValidate()
@@ -90,5 +102,17 @@ public class Item : MonoBehaviour
         }
 
         hitboxAdjustmentTrigger = false;
+    }
+
+
+    public void OnPickup()
+    {
+        pickupDelegate_?.Invoke();
+        isPickedUp = true;
+    }
+    public void OnRelease()
+    {
+        releaseDelegate_?.Invoke();
+        isPickedUp = false;
     }
 }

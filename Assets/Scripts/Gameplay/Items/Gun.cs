@@ -20,7 +20,6 @@ public class Gun : Item
     private float reloadTimer = 0f;
     private int remainingAmmos = 0;
     private bool isShooting = false;
-    private bool isEquipped = false;
     private bool isReloading = false;
 
     private void Awake()
@@ -31,11 +30,14 @@ public class Gun : Item
         remainingAmmos = ammosPerRound;
 
         TrySetAmmoTextVisibility(false);
+
+        pickupDelegate_ += OnEquip;
+        releaseDelegate_ += OnUnequip;
     }
 
     private void Update()
     {
-        if (!isEquipped)
+        if (!IsPickedUp)
         {
             return;
         }
@@ -81,10 +83,6 @@ public class Gun : Item
         }
     }
 
-    public void GiveAmmos(int _ammoNb)
-    {
-        remainingAmmos += _ammoNb;
-    }
 
     private void Shoot()
     {
@@ -148,7 +146,6 @@ public class Gun : Item
         Debug.Log("<color=cyan>Reloaded!</color>");
     }
 
-
     private void TrySetAmmoTextVisibility(bool _isVisible)
     {
         if (!ammoText)
@@ -173,10 +170,21 @@ public class Gun : Item
     }
 
 
+    public void GiveAmmos(int _ammoNb)
+    {
+        remainingAmmos += _ammoNb;
+    }
+
     public void OnEquip(Transform _holderTransform)
     {
-        shooterTransform = _holderTransform;
+        if (!_holderTransform)
+        {
+            return;
+        }
 
+        OnPickup();
+
+        shooterTransform = _holderTransform;
         transform.SetParent(shooterTransform);
 
         transform.localPosition =
@@ -185,18 +193,15 @@ public class Gun : Item
         transform.localRotation =
             Quaternion.Euler(0f, 75f, 70f);
 
-        isEquipped = true;
-
         collider.enabled = false;
 
         TrySetAmmoTextVisibility(true);
         TryAdaptAmmoText();
-
-        Debug.Log("Gun equipped!");
     }
     public void OnUnequip()
     {
-        isEquipped = false;
+        OnRelease();
+
         isShooting = false;
 
         TrySetAmmoTextVisibility(false);

@@ -60,13 +60,13 @@ public class PlayerActionManager : MonoBehaviour
     private void PickupItem(Holdable _pickableItem)
     {
         inventory.SetCurrentItem(_pickableItem);
-        _pickableItem.NotifyHold(camTransform);
+        _pickableItem.OnHold(camTransform);
     }
 
     private void DropItem(Holdable _pickableItem)
     {
         inventory.SetCurrentItem(null);
-        _pickableItem.NotifyDrop();
+        _pickableItem.OnDrop();
     }
 
     private void ConsumeItem(Consumable _consumableItem)
@@ -76,7 +76,7 @@ public class PlayerActionManager : MonoBehaviour
 
     private void ThrowItem(Holdable _throwableItem, float _throwForce)
     {
-        _throwableItem.NotifyThrow(_throwForce);
+        _throwableItem.OnThrow(_throwForce);
     }
 
     private void EquipGun(Gun _gunToEquip)
@@ -173,7 +173,7 @@ public class PlayerActionManager : MonoBehaviour
                 {
                     Holdable holdable = (currentItem as Holdable);
 
-                    if (_context.started && holdable.IsHeld)
+                    if (_context.started && holdable.IsPickedUp)
                     {
                         ThrowItem(holdable, statManager.ThrowForce);
                     }
@@ -226,15 +226,15 @@ public class PlayerActionManager : MonoBehaviour
         {
             if (_context.started)
             {
-                Holdable throwable = item as Holdable;
+                Holdable holdable = item as Holdable;
 
-                if (!throwable.IsHeld)
+                if (!holdable.IsPickedUp)
                 {
-                    PickupItem(throwable);
+                    PickupItem(holdable);
                 }
                 else
                 {
-                    DropItem(throwable);
+                    DropItem(holdable);
                 }
             }
         }

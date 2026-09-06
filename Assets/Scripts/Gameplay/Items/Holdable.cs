@@ -11,15 +11,9 @@ public class Holdable : Item
     private Transform holder = null;
     private Collider holdableCollider = null;
     private float distanceWithHolder = 1f;
-    private bool isHeld = false;
 
     protected Transform hitTransform_ = null;
     protected bool isThrown_ = false;
-
-    public bool IsHeld
-    {
-        get => isHeld;
-    }
 
 
     private void Awake()
@@ -37,7 +31,7 @@ public class Holdable : Item
 
     protected void Update()
     {
-        if (!IsHeld)
+        if (!IsPickedUp)
         {
             return;
         }
@@ -66,7 +60,7 @@ public class Holdable : Item
     {
         Transform collisionTransform = _collision.transform;
 
-        if (isHeld || collisionTransform.GetComponent<Item>())
+        if (IsPickedUp || collisionTransform.GetComponent<Item>())
         {
             return;
         }
@@ -101,14 +95,15 @@ public class Holdable : Item
     }
 
 
-    public void NotifyHold(Transform _holder)
+    public void OnHold(Transform _holder)
     {
-        holder = _holder;
-
-        if (holder)
+        if (!_holder)
         {
-            distanceWithHolder = Vector3.Distance(transform.position, holder.position);
+            return;
         }
+
+        holder = _holder;
+        distanceWithHolder = Vector3.Distance(transform.position, holder.position);
 
         if (!rb)
         {
@@ -118,25 +113,26 @@ public class Holdable : Item
         ResetRigidbodyVelocity();
         rb.useGravity = false;
 
-        isHeld = true;
         isThrown_ = false;
     }
 
-    public void NotifyDrop()
+    public void OnDrop()
     {
+        OnRelease();
+
         holder = null;
         distanceWithHolder = 0f;
         
         ResetRigidbodyVelocity();
         rb.useGravity = true;
 
-        isHeld = false;
         isThrown_ = false;
     }
 
-    public void NotifyThrow(float _throwForce)
+    public void OnThrow(float _throwForce)
     {
-        isHeld = false;
+        OnRelease();
+
         isThrown_ = true;
         rb.useGravity = true;
 

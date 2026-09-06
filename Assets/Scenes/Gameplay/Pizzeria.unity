@@ -3312,7 +3312,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &734228750
 Transform:
   m_ObjectHideFlags: 0
@@ -3808,8 +3808,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Consumable
   hitboxFactor: 1.25
   baseDamageOnHit: 1
-  mexicanSauceMusic: {fileID: 0}
   type: 0
+  mexicanSauceMusic: {fileID: 0}
 --- !u!54 &786419180
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4677,7 +4677,7 @@ Transform:
   m_GameObject: {fileID: 1019890700}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.38268277, z: -0, w: 0.92387986}
-  m_LocalPosition: {x: 16.081, y: -3.33, z: 13.169}
+  m_LocalPosition: {x: -1.2, y: -3.9, z: -22.5}
   m_LocalScale: {x: 0.125, y: 0.33, z: 0.125}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4697,8 +4697,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Consumable
   hitboxFactor: 1.25
   baseDamageOnHit: 1
-  mexicanSauceMusic: {fileID: 1019890707}
   type: 2
+  mexicanSauceMusic: {fileID: 8300000, guid: 1ca8939c2cf8e6845953183858f6f272, type: 3}
 --- !u!54 &1019890703
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4815,7 +4815,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 1ca8939c2cf8e6845953183858f6f272, type: 3}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -4825,7 +4825,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 5
+  MinDistance: 1
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
@@ -4971,8 +4971,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Consumable
   hitboxFactor: 1.25
   baseDamageOnHit: 1
-  mexicanSauceMusic: {fileID: 0}
   type: 0
+  mexicanSauceMusic: {fileID: 0}
 --- !u!54 &1065169839
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6555,8 +6555,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Consumable
   hitboxFactor: 1.25
   baseDamageOnHit: 1
-  mexicanSauceMusic: {fileID: 0}
   type: 0
+  mexicanSauceMusic: {fileID: 0}
 --- !u!54 &1595845361
 Rigidbody:
   m_ObjectHideFlags: 0

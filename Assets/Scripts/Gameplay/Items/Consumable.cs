@@ -9,16 +9,27 @@ public class Consumable : Holdable
         MEXICAN_SAUCE
     }
 
-    [SerializeField] private AudioSource mexicanSauceMusic = null;
     [SerializeField] private ConsumableType type = ConsumableType.CHEESE_SAUCE;
+    [SerializeField] private AudioClip mexicanSauceMusic = null;
 
     private Collider consumableCollider = null;
+    private AudioSource audioSource = null;
+    private bool hasStartedMusicOnce = false;
+    private bool canDestroySelf = true;
 
     private void Awake()
     {
         if (!consumableCollider)
         {
             consumableCollider = GetComponent<Collider>();
+        }
+
+        if (type == ConsumableType.MEXICAN_SAUCE)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.clip = mexicanSauceMusic;
+
+            canDestroySelf = false;
         }
 
         base.SetCurrentHitboxValuesAsDefault(consumableCollider);
@@ -31,15 +42,14 @@ public class Consumable : Holdable
 
         if (isThrown_ && hitTransform_)
         {
-            if (type == ConsumableType.MEXICAN_SAUCE)
-            {
-                if (mexicanSauceMusic)
-                {
-                    mexicanSauceMusic.Play();
-                }
-            }
-
             isThrown_ = false;
+
+            if (audioSource && audioSource.clip &&
+                !hasStartedMusicOnce)
+            {
+                audioSource.Play();
+                hasStartedMusicOnce = true;
+            }
 
             Zombie zombie = hitTransform_.GetComponent<Zombie>();
 
@@ -60,7 +70,7 @@ public class Consumable : Holdable
                         break;
                     case ConsumableType.MEXICAN_SAUCE:
                         {
-                            
+                            //zombie.StartDancing();
                         }
                         break;
                     default:
@@ -69,7 +79,18 @@ public class Consumable : Holdable
                         break;
                 }
             }
+        }
 
+        if (hasStartedMusicOnce && type == ConsumableType.MEXICAN_SAUCE)
+        {
+            if (!audioSource.isPlaying)
+            {
+                canDestroySelf = true;
+            }
+        }
+
+        if (canDestroySelf)
+        {
             Destroy(gameObject);
         }
     }
