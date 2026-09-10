@@ -2,9 +2,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
-using UnityEngine.SceneManagement;
 
-// Needs an instance for some features
 public class InputManager : MonoBehaviour
 {
     public static Keyboard s_CurrentKeyboard
@@ -104,24 +102,6 @@ public class InputManager : MonoBehaviour
         if (m_dontDestroyOnLoad)
         {
             DontDestroyOnLoad(gameObject);
-        }
-
-        if (!s_MouseConnected)
-        {
-            return;
-        }
-
-        Vector2 screenCenter = 0.5f * new Vector2(
-            Screen.width,
-            Screen.height
-        );
-
-        s_CurrentMouse.WarpCursorPosition(screenCenter);
-
-        if (SceneManager.GetActiveScene().name != "MainMenu")
-        {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
         }
     }
 }

@@ -10,7 +10,7 @@ public class PlayerStatManager : PlayerComponent
     [SerializeField] [Min(1)]
      private int m_maxHealth = 100;
     [SerializeField] [Min(0f)]
-    private float m_regenerationTriggerDelay = 2f;
+    private float m_regenerationDelay = 2f;
     [SerializeField] [Min(0f)]
      private float m_regenerationsPerSec = 10f;
     [SerializeField] [Range(0, 100)]
@@ -27,21 +27,21 @@ public class PlayerStatManager : PlayerComponent
      private int m_meleeAttackDamage = 2;
 
     [Header("- UI- ")]
-    [SerializeField] private Image m_damageOverlay = null;
-    [SerializeField] private TextMeshProUGUI m_healthTextValue = null;
+    [SerializeField] private GameObject m_playerUI = null;
 
     [Header("- Misc -")]
     [SerializeField] [Min(0f)]
      private float m_pickupReach = 5f;
     [SerializeField] [Min(0f)]
      private float m_throwForce = 10f;
-    [SerializeField] private bool m_isDead = false;
 
+    private Transform m_canvasTransform = null;
+    private Image m_damageOverlay = null;
+    private TextMeshProUGUI m_healthTextValue = null;
     private float m_regenerationTimer = 0f;
     private int m_healthCpy = 0;
     private int m_healthBuffer = 0;
     private bool m_regenerationDelayTrigger = true;
-    private bool m_isDeadCpy = false;
 
     public float m_RangedAttackReach
     {
@@ -59,7 +59,6 @@ public class PlayerStatManager : PlayerComponent
     {
         get => m_meleeAttackDamage;
     }
-
     public float m_PickupReach
     {
         get => m_pickupReach;
@@ -68,6 +67,10 @@ public class PlayerStatManager : PlayerComponent
     {
         get => m_throwForce;
     }
+    public int m_Health
+    {
+        get => m_health;
+    }
 
 
     private void Awake()
@@ -75,18 +78,50 @@ public class PlayerStatManager : PlayerComponent
         m_healthBuffer = m_health;
     }
 
+    private void Start()
+    {
+        m_canvasTransform = FindAnyObjectByType<Canvas>().transform;
+
+        if (!m_canvasTransform)
+        {
+            return;
+        }
+
+        GameObject uiObj = Instantiate(
+            m_playerUI,
+            m_canvasTransform
+        );
+
+        if (!uiObj)
+        {
+            return;
+        }
+
+        Transform uiTransform = uiObj.transform;
+
+        if (!uiTransform)
+        {
+            return;
+        }
+
+        m_damageOverlay =
+            uiTransform
+                .Find("DamageOverlay")
+                .GetComponent<Image>();
+        m_healthTextValue =
+            uiTransform
+                .Find("HealthText_Text")
+                .GetChild(0)
+                .GetComponent<TextMeshProUGUI>();
+    }
+
     private void Update()
     {
-        //if (isDead)
-        //{
-        //    return;
-        //}
-
         if (m_health < m_maxHealth)
         {
             if (m_regenerationDelayTrigger)
             {
-                m_regenerationTimer = -m_regenerationTriggerDelay;
+                m_regenerationTimer = -m_regenerationDelay;
                 m_regenerationDelayTrigger = false;
             }
 
@@ -112,19 +147,10 @@ public class PlayerStatManager : PlayerComponent
 
     private void OnValidate()
     {
-        if (m_isDeadCpy != m_isDead)
+        if (m_healthBuffer != m_health)
         {
-            m_health =
-                (m_isDead)
-                    ? 0
-                    : m_healthBuffer;
-
-            m_isDeadCpy = m_isDead;
-        }
-        else if (m_healthBuffer != m_health)
-        {
-            m_healthBuffer = m_health;
             TryAdaptHealthText();
+            m_healthBuffer = m_health;
         }
 
         if (m_maxHealth < m_health)
@@ -189,26 +215,15 @@ public class PlayerStatManager : PlayerComponent
         textColour.r = 1f - percentage;
         textColour.g = percentage;
 
-        m_healthTextValue.text = m_health.ToString();
+        m_healthTextValue.text = Mathf.Max(m_health, 0).ToString();
         m_healthTextValue.color = textColour;
     }
 
 
     public void TakeDamage(int _damage)
     {
-        if (m_isDead)
-        {
-            return;
-        }
-
         m_health -= _damage;
         m_regenerationDelayTrigger = true;
-
-        if (m_health <= 0)
-        {
-            m_isDead = true;
-        }
-
         m_healthBuffer = m_health;
 
         TryAdaptHealthText();
