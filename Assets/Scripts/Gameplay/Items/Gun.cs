@@ -4,49 +4,68 @@ using TMPro;
 public class Gun : Item
 {
     [Header("-- Gun --")]
-    [SerializeField] private TextMeshProUGUI ammoText = null;
-    [SerializeField] private int shotsPerSecond = 4;
-    [SerializeField] private int shotDamage = 5;
-    [SerializeField] private int ammosPerRound = 10;
-    [SerializeField] private int roundNb = 3;
-    [SerializeField] private float reloadDuration = 1.5f;
+    [SerializeField] private TextMeshProUGUI m_ammoText = null;
+    [SerializeField] [Min(1)]
+     private int m_shotsPerSecond = 4;
+    [SerializeField] private int m_damagePerShot = 5;
+    [SerializeField] [Min(0)]
+     private int m_magazineCapacity = 10;
+    [SerializeField] [Min(0)]
+     private int m_startingMagazineCount = 3;
+    [SerializeField] [Min(0f)]
+     private float m_reloadDuration = 1.5f;
 
-    private new Collider collider = null;
-    private Transform shooterTransform = null;
-    private Ray ray = new Ray();
-    private float shootCooldown = 0f;
-    private float shootTimer = 0f;
-    private float shotReach = 0f;
-    private float reloadTimer = 0f;
-    private int remainingAmmos = 0;
-    private bool isShooting = false;
-    private bool isReloading = false;
+    private Collider m_collider = null;
+    private Ray m_ray = new Ray();
+    private float m_shotCooldown = 0f;
+    private float m_shotTimer = 0f;
+    private float m_shotReach = 0f;
+    private float m_reloadTimer = 0f;
+    private int m_currentMagazineAmmo = 0;
+    private int m_reserveAmmo = 0;
+    private bool m_isShooting = false;
+    private bool m_isReloading = false;
+    private bool m_isPickedUpCpy = false;
 
     private void Awake()
     {
-        collider = GetComponent<Collider>();
+        m_Rb_.linearVelocity = Vector3.zero;
+        m_collider = GetComponent<Collider>();
 
-        shootCooldown = 1f / shotsPerSecond;
-        remainingAmmos = ammosPerRound;
+        m_currentMagazineAmmo = m_magazineCapacity;
+        m_reserveAmmo =
+            Mathf.Max(0, (m_startingMagazineCount - 1) * m_magazineCapacity);
+        m_shotCooldown = 1f / m_shotsPerSecond;
 
         TrySetAmmoTextVisibility(false);
-
-        pickupDelegate_ += OnEquip;
-        releaseDelegate_ += OnUnequip;
     }
 
     private void Update()
     {
-        if (!IsPickedUp)
+        if (m_isPickedUpCpy != m_IsPickedUp)
+        {
+            if (m_IsPickedUp)
+            {
+                OnEquip();
+            }
+            else
+            {
+                OnUnequip();
+            }
+
+            m_isPickedUpCpy = m_IsPickedUp;
+        }
+
+        if (!m_IsPickedUp)
         {
             return;
         }
 
-        if (isReloading)
+        if (m_isReloading)
         {
-            reloadTimer += Time.deltaTime;
+            m_reloadTimer += Time.deltaTime;
 
-            if (reloadTimer >= reloadDuration)
+            if (m_reloadTimer >= m_reloadDuration)
             {
                 Reload();
             }
@@ -54,106 +73,82 @@ public class Gun : Item
             return;
         }
 
-        if (remainingAmmos == 0)
+        if (m_reserveAmmo > 0 && m_currentMagazineAmmo == 0)
         {
-            if (roundNb == 0)
-            {
-                return;
-            }
-
-            isReloading = true;
-            reloadTimer = 0f;
-
-            Debug.Log("<color=orange>Reloading...</color>");
+            m_isReloading = true;
+            m_reloadTimer = 0f;
 
             return;
         }
 
-        if (!isShooting)
+        if (!m_isShooting || m_currentMagazineAmmo == 0)
         {
             return;
         }
 
-        shootTimer += Time.deltaTime;
+        m_shotTimer += Time.deltaTime;
 
-        if (shootTimer >= shootCooldown)
+        if (m_shotTimer >= m_shotCooldown)
         {
             Shoot();
-            shootTimer = 0f;
+            m_shotTimer = 0f;
         }
     }
 
 
     private void Shoot()
     {
-        ray.origin = shooterTransform.position;
-        ray.direction = shooterTransform.forward;
+        m_ray.origin = m_HolderTransform_.position;
+        m_ray.direction = m_HolderTransform_.forward;
 
-        Debug.Log(
-            $"<color=yellow>PEW @ {Time.time:F3}</color>"
-        );
-
-        remainingAmmos--;
+        m_currentMagazineAmmo--;
 
         TryAdaptAmmoText();
 
         if (!Physics.Raycast(
-            ray,
+            m_ray,
             out RaycastHit info,
-            shotReach
+            m_shotReach
         ))
         {
-            Debug.Log("<color=red>MISS</color>");
             return;
         }
-
-        Debug.Log(
-            $"<color=green>HIT: {info.transform.name}</color>"
-        );
 
         Zombie zombie = info.transform.GetComponent<Zombie>();
 
         if (!zombie)
         {
-            Debug.Log(
-                $"Hit {info.transform.name}, but it isn't a Zombie."
-            );
-
             return;
         }
 
-        Debug.Log(
-            $"<color=magenta>TAKING DAMAGE @ {Time.time:F3}</color>"
-        );
-
-        zombie.TakeDamage(shotDamage);
-
-        Debug.Log(
-            $"<color=cyan>DAMAGE CALLED @ {Time.time:F3}</color>"
-        );
+        zombie.TakeDamage(m_damagePerShot);
     }
 
     private void Reload()
     {
-        remainingAmmos = ammosPerRound;
-        roundNb--;
+        int missingAmmo =
+            m_magazineCapacity - m_currentMagazineAmmo;
 
-        reloadTimer = 0f;
-        isReloading = false;
+        int ammoToReload =
+            Mathf.Min(missingAmmo, m_reserveAmmo);
+
+        m_currentMagazineAmmo += ammoToReload;
+        m_reserveAmmo -= ammoToReload;
+
+        m_reloadTimer = 0f;
+        m_isReloading = false;
 
         TryAdaptAmmoText();
-
-        Debug.Log("<color=cyan>Reloaded!</color>");
     }
 
     private void TrySetAmmoTextVisibility(bool _isVisible)
     {
-        if (!ammoText)
+        if (!m_ammoText)
         {
             return;
         }
 
-        ammoText.alpha =
+        m_ammoText.alpha =
             (_isVisible)
                 ? 1f
                 : 0f;
@@ -161,52 +156,68 @@ public class Gun : Item
 
     private void TryAdaptAmmoText()
     {
-        if (!ammoText)
+        if (!m_ammoText)
         {
             return;
         }
 
-        ammoText.text = $"{remainingAmmos}\n-----\n{roundNb}";
+        m_ammoText.text = $"{m_currentMagazineAmmo}/{m_reserveAmmo}";
     }
 
 
     public void GiveAmmos(int _ammoNb)
     {
-        remainingAmmos += _ammoNb;
-    }
-
-    public void OnEquip(Transform _holderTransform)
-    {
-        if (!_holderTransform)
+        if (_ammoNb <= 0)
         {
             return;
         }
 
-        OnPickup();
+        m_reserveAmmo += _ammoNb;
 
-        shooterTransform = _holderTransform;
-        transform.SetParent(shooterTransform);
+        TryAdaptAmmoText();
+    }
 
+    public void TryReload()
+    {
+        if (m_isReloading ||
+            m_reserveAmmo <= 0 ||
+            m_currentMagazineAmmo == m_magazineCapacity)
+        {
+            return;
+        }
+
+        m_reloadTimer = 0f;
+        m_isReloading = true;
+    }
+
+    public void OnEquip()
+    {
+        if (!m_HolderTransform_)
+        {
+            return;
+        }
+
+        m_Rb_.isKinematic = true;
+
+        transform.SetParent(m_HolderTransform_);
         transform.localPosition =
             new Vector3(0.33f, -0.4f, 0.6f);
-
         transform.localRotation =
             Quaternion.Euler(0f, 75f, 70f);
 
-        collider.enabled = false;
+        m_collider.enabled = false;
 
         TrySetAmmoTextVisibility(true);
         TryAdaptAmmoText();
     }
     public void OnUnequip()
     {
-        OnRelease();
-
-        isShooting = false;
+        m_Rb_.isKinematic = false;
+        m_isShooting = false;
 
         TrySetAmmoTextVisibility(false);
 
-        collider.enabled = true;
+        m_collider.enabled = true;
 
         transform.SetParent(null);
     }
@@ -219,25 +230,21 @@ public class Gun : Item
                 ? Color.green
                 : Color.red;
         string textColour = "<color=" + colour.ToString() + ">";
-
-        Debug.Log(textColour + "isAiming" + "</color>");
     }
 
-    public void StartShooting(float _shotReach, Transform _shooterTransform)
+    public void StartShooting(float _shotReach)
     {
-        if (isReloading)
+        if (m_isReloading)
         {
             return;
         }
 
-        shooterTransform = _shooterTransform;
-
-        shotReach = _shotReach;
-        shootTimer = shootCooldown;
-        isShooting = true;
+        m_shotReach = _shotReach;
+        m_shotTimer = m_shotCooldown;
+        m_isShooting = true;
     }
     public void StopShooting()
     {
-        isShooting = false;
+        m_isShooting = false;
     }
 }

@@ -1,20 +1,20 @@
 using UnityEngine;
 
-public class PlayerViewController : MonoBehaviour
+public class PlayerViewController : PlayerComponent
 {
-    [SerializeField] private float rotationSpeed = 1.5f;
-    [SerializeField] private float maxRotationAngle = 45f;
-    [SerializeField] private bool invertVAxis = true;
+    [SerializeField] private float m_rotationSpeed = 1.5f;
+    [SerializeField] private float m_maxRotationAngle = 45f;
+    [SerializeField] private bool m_invertVAxis = true;
 
-    private float verticalRotation = 0f;
+    private float m_verticalRotation = 0f;
 
     private void Awake()
     {
-        verticalRotation = transform.localEulerAngles.x;
+        m_verticalRotation = transform.localEulerAngles.x;
 
-        if (verticalRotation > 180f)
+        if (m_verticalRotation > 180f)
         {
-            verticalRotation -= 360f;
+            m_verticalRotation -= 360f;
         }
     }
 
@@ -25,27 +25,27 @@ public class PlayerViewController : MonoBehaviour
 
     private void Rotate()
     {
-        if (!InputManager.MouseConnected)
+        if (!InputManager.s_MouseConnected)
         {
             return;
         }
 
         float verticalAngle =
-            InputManager.MouseDelta.y *
-            (invertVAxis
+            InputManager.s_MouseDelta.y *
+            (m_invertVAxis
                 ? 1f
                 : -1f
             );
 
-        verticalRotation += Time.deltaTime * verticalAngle * rotationSpeed;
-        verticalRotation = Mathf.Clamp(
-            verticalRotation,
-            -maxRotationAngle,
-            maxRotationAngle
+        m_verticalRotation += Time.deltaTime * verticalAngle * m_rotationSpeed;
+        m_verticalRotation = Mathf.Clamp(
+            m_verticalRotation,
+            -m_maxRotationAngle,
+            m_maxRotationAngle
         );
 
         transform.localRotation = Quaternion.Euler(
-            verticalRotation,
+            m_verticalRotation,
             transform.localEulerAngles.y,
             transform.localEulerAngles.z
         );

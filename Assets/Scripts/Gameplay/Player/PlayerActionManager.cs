@@ -1,24 +1,22 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerActionManager : MonoBehaviour
+public class PlayerActionManager : PlayerComponent
 {
-    [SerializeField] private Transform camTransform = null;
-
-    private PlayerStatManager statManager = null;
-    private PlayerInventory inventory = null;
-    private Zombie target = null;
-    private Ray ray = new Ray();
-    private float meleeAttackTimer = 0f;
-    private float meleeAttackCooldown = 0f;
-    private bool meleeAttackTrigger = false;
+    private PlayerStatManager m_statManager = null;
+    private PlayerInventory m_inventory = null;
+    private Zombie m_target = null;
+    private Ray m_ray = new Ray();
+    private float m_meleeAttackTimer = 0f;
+    private float m_meleeAttackCooldown = 0f;
+    private bool m_meleeAttackTrigger = false;
 
     private void Awake()
     {
-        statManager = GetComponent<PlayerStatManager>();
-        inventory = GetComponent<PlayerInventory>();
+        m_statManager = GetComponent<PlayerStatManager>();
+        m_inventory = GetComponent<PlayerInventory>();
 
-        meleeAttackCooldown = statManager.MeleeAttackCooldown;
+        m_meleeAttackCooldown = m_statManager.m_MeleeAttackCooldown;
     }
 
     private void FixedUpdate()
@@ -28,68 +26,79 @@ public class PlayerActionManager : MonoBehaviour
 
     private void Update()
     {
-        if (meleeAttackTimer < meleeAttackCooldown)
+        if (m_meleeAttackTimer < m_meleeAttackCooldown)
         {
-            meleeAttackTimer += Time.deltaTime;
+            m_meleeAttackTimer += Time.deltaTime;
         }
 
-        if (meleeAttackTrigger &&
-            meleeAttackTimer >= meleeAttackCooldown)
+        if (m_meleeAttackTrigger &&
+            m_meleeAttackTimer >= m_meleeAttackCooldown)
         {
-            if (target)
+            if (m_target)
             {
-                target.TakeDamage(statManager.MeleeAttackDamage);
+                m_target.TakeDamage(m_statManager.m_MeleeAttackDamage);
             }
 
-            meleeAttackTimer = 0f;
-            meleeAttackTrigger = false;
+            m_meleeAttackTimer = 0f;
+            m_meleeAttackTrigger = false;
         }
     }
 
 
     private void TriggerMeleeAttack()
     {
-        meleeAttackTrigger = true;
+        m_meleeAttackTrigger = true;
     }
     private void StopMeleeAttack()
     {
-        meleeAttackTrigger = false;
+        m_meleeAttackTrigger = false;
     }
 
 
-    private void PickupItem(Holdable _pickableItem)
+    private void TryPickupItem(Item _item)
     {
-        inventory.SetCurrentItem(_pickableItem);
-        _pickableItem.OnHold(camTransform);
+        if (_item == null ||
+            _item.m_IsPickedUp ||
+            m_inventory.m_CurrentItem == _item)
+        {
+            return;
+        }
+
+        m_inventory.SetCurrentItem(_item);
+        _item.OnPickup(m_CamTransform_);
     }
-
-    private void DropItem(Holdable _pickableItem)
+    private void DropItem(Item _item)
     {
-        inventory.SetCurrentItem(null);
-        _pickableItem.OnDrop();
-    }
+        if (!_item)
+        {
+            return;
+        }
 
-    private void ConsumeItem(Consumable _consumableItem)
-    {
+        if (_item is Holdable || _item is Consumable)
+        {
+            (_item as Holdable).OnDrop();
+            m_inventory.ClearCurrentItem();
+            return;
+        }
 
+        m_inventory.SetCurrentItem(null);
     }
 
     private void ThrowItem(Holdable _throwableItem, float _throwForce)
     {
+        if (!_throwableItem)
+        {
+            return;
+        }
+
         _throwableItem.OnThrow(_throwForce);
+        m_inventory.ClearCurrentItem();
     }
-
-    private void EquipGun(Gun _gunToEquip)
-    {
-        inventory.SetCurrentItem(_gunToEquip);
-        _gunToEquip.OnEquip(camTransform);
-    }
-
 
     private void UpdateRayOriginAndDirection()
     {
-        ray.origin = camTransform.position;
-        ray.direction = camTransform.forward;
+        m_ray.origin = m_CamTransform_.position;
+        m_ray.direction = m_CamTransform_.forward;
     }
 
 
@@ -102,18 +111,18 @@ public class PlayerActionManager : MonoBehaviour
         UpdateRayOriginAndDirection();
 
         float maxRayDistance = 0f;
-        Item currentItem = inventory.CurrentItem;
+        Item currentItem = m_inventory.m_CurrentItem;
 
         switch (currentItem)
         {
             case null:
                 {
-                    maxRayDistance = statManager.MeleeAttackReach;
+                    maxRayDistance = m_statManager.m_MeleeAttackReach;
                 }
                 break;
             default:
                 {
-                    maxRayDistance = statManager.RangedAttackReach;
+                    maxRayDistance = m_statManager.m_RangedAttackReach;
                 }
                 break;
         }
@@ -128,7 +137,7 @@ public class PlayerActionManager : MonoBehaviour
                     {
                         bool foundSomething =
                             Physics.Raycast(
-                                ray,
+                                m_ray,
                                 out RaycastHit info,
                                 maxRayDistance
                         );
@@ -139,7 +148,7 @@ public class PlayerActionManager : MonoBehaviour
 
                             if (targetTransform)
                             {
-                                target = targetTransform.GetComponent<Zombie>();
+                                m_target = targetTransform.GetComponent<Zombie>();
                             }
                         }
 
@@ -147,7 +156,7 @@ public class PlayerActionManager : MonoBehaviour
                     }
                     else if (_context.canceled)
                     {
-                        target = null;
+                        m_target = null;
                         StopMeleeAttack();
                     }
                 }
@@ -158,10 +167,7 @@ public class PlayerActionManager : MonoBehaviour
 
                     if (_context.started)
                     {
-                        gun.StartShooting(
-                            statManager.RangedAttackReach,
-                            camTransform
-                        );
+                        gun.StartShooting(m_statManager.m_RangedAttackReach);
                     }
                     else if (_context.canceled)
                     {
@@ -173,9 +179,9 @@ public class PlayerActionManager : MonoBehaviour
                 {
                     Holdable holdable = (currentItem as Holdable);
 
-                    if (_context.started && holdable.IsPickedUp)
+                    if (_context.started && holdable.m_IsPickedUp)
                     {
-                        ThrowItem(holdable, statManager.ThrowForce);
+                        ThrowItem(holdable, m_statManager.m_ThrowForce);
                     }
                 }
                 break;
@@ -187,9 +193,8 @@ public class PlayerActionManager : MonoBehaviour
     }
 
     // Secondary action:
-    //   - Aim
     //   - Pick object up
-    //   - Let go of picked up object
+    //   - Drop picked up object
     public void OnSecondaryAction(InputAction.CallbackContext _context)
     {
         if (!_context.started)
@@ -199,45 +204,63 @@ public class PlayerActionManager : MonoBehaviour
 
         UpdateRayOriginAndDirection();
 
-        bool nothingFound =
+        Item item = null;
+
+        bool hasFoundNothing =
             !Physics.Raycast(
-                ray,
+                m_ray,
                 out RaycastHit info,
-                statManager.PickupReach
+                m_statManager.m_PickupReach
             );
-        Transform itemTransform = info.transform;
+        Transform targetTransform = info.transform;
 
-        if (nothingFound || itemTransform == null)
+        if (hasFoundNothing ||
+            targetTransform == null)
         {
             return;
         }
 
-        Item item = itemTransform.GetComponent<Item>();
+        item = targetTransform.GetComponent<Item>();
 
-        // When looking at a gun
-        if (item is Gun)
+        if (!item)
         {
-            EquipGun(item as Gun);
             return;
         }
 
-        // When looking at any other item
+        if (!item.m_IsPickedUp)
+        {
+            TryPickupItem(item);
+            return;
+        }
+
         if (item is Holdable || item is Consumable)
         {
-            if (_context.started)
-            {
-                Holdable holdable = item as Holdable;
-
-                if (!holdable.IsPickedUp)
-                {
-                    PickupItem(holdable);
-                }
-                else
-                {
-                    DropItem(holdable);
-                }
-            }
+            DropItem(item as Holdable);
         }
+    }
+
+    public void OnReload(InputAction.CallbackContext _context)
+    {
+        if (!_context.started)
+        {
+            return;
+        }
+
+        Item item = m_inventory.m_CurrentItem;
+
+        if (!item)
+        {
+            return;
+        }
+
+        Gun gun = item as Gun;
+
+        if (!gun)
+        {
+            return;
+        }
+
+        gun.TryReload();
     }
 
     public void OnInteract(InputAction.CallbackContext _context)

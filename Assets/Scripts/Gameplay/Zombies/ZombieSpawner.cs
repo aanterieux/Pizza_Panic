@@ -2,54 +2,54 @@ using UnityEngine;
 
 public class ZombieSpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject zombiePrefab = null;
-    [SerializeField] private int maxSpawnedZombies = 10;
-    [SerializeField] private int zombiesPerSpawn = 1;
-    [SerializeField] private float spawnWaitingTime = 3.5f;
-    [SerializeField] private float spawnRadius = 3f;
-    [SerializeField] private bool isActive = true;
+    [SerializeField] private GameObject m_zombiePrefab = null;
+    [SerializeField] private int m_maxSpawnedZombies = 10;
+    [SerializeField] private int m_zombiesPerSpawn = 1;
+    [SerializeField] private float m_spawnWaitingTime = 3.5f;
+    [SerializeField] private float m_spawnRadius = 3f;
+    [SerializeField] private bool m_isActive = true;
 
-    private ZombieSpawner self = null;
-    private ZombieManager manager = null;
-    private float spawnTimer = 0f;
-    private int zombieSpawnedCount = 0;
+    private ZombieSpawner m_self = null;
+    private ZombieManager m_manager = null;
+    private float m_spawnTimer = 0f;
+    private int m_zombieSpawnedCount = 0;
 
     private void Awake()
     {
-        self = GetComponent<ZombieSpawner>();
+        m_self = GetComponent<ZombieSpawner>();
     }
 
     private void Start()
     {
-        manager = FindAnyObjectByType<ZombieManager>();
+        m_manager = FindAnyObjectByType<ZombieManager>();
 
-        if (!manager)
+        if (!m_manager)
         {
-            manager = Instantiate(new ZombieManager());
+            m_manager = Instantiate(new ZombieManager());
         }
     }
 
     private void Update()
     {
-        if (!manager.IsSpawnAllowed)
+        if (!m_manager.m_IsSpawnAllowed)
         {
             return;
         }
 
-        isActive = (zombieSpawnedCount < maxSpawnedZombies);
+        m_isActive = (m_zombieSpawnedCount < m_maxSpawnedZombies);
 
-        if (!isActive)
+        if (!m_isActive)
         {
             return;
         }
 
-        spawnTimer += Time.deltaTime;
+        m_spawnTimer += Time.deltaTime;
 
-        if (spawnTimer >= spawnWaitingTime)
+        if (m_spawnTimer >= m_spawnWaitingTime)
         {
             SpawnZombie();
 
-            spawnTimer = 0f;
+            m_spawnTimer = 0f;
         }
     }
 
@@ -61,9 +61,9 @@ public class ZombieSpawner : MonoBehaviour
         Vector3 spawnPos;
         Zombie newZombie;
 
-        for (int i = 0; i < zombiesPerSpawn; ++i)
+        for (int i = 0; i < m_zombiesPerSpawn; ++i)
         {
-            horizontalOffset = spawnRadius * Random.insideUnitCircle;
+            horizontalOffset = m_spawnRadius * Random.insideUnitCircle;
             spawnPos =
                 selfPos
                 + new Vector3(
@@ -74,21 +74,21 @@ public class ZombieSpawner : MonoBehaviour
 
             newZombie =
                 Instantiate(
-                    zombiePrefab,
+                    m_zombiePrefab,
                     spawnPos,
                     Quaternion.identity,
                     transform
                 ).GetComponent<Zombie>();
-            newZombie.LinkToSpawner(self);
+            newZombie.LinkToSpawner(m_self);
 
-            zombieSpawnedCount++;
-            manager.IncrementZombieCount();
+            m_zombieSpawnedCount++;
+            m_manager.IncrementZombieCount();
         }
     }
 
     public void NotifyZombieDeath()
     {
-        zombieSpawnedCount--;
-        manager.DecrementZombieCount();
+        m_zombieSpawnedCount--;
+        m_manager.DecrementZombieCount();
     }
 }

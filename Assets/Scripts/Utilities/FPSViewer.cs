@@ -3,26 +3,26 @@ using TMPro;
 
 public class FPSViewer : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI tmpText = null;
+    [SerializeField] private TextMeshProUGUI m_tmpText = null;
 
-    private int frameCount;
-    private float totalFrameTime;
+    private int m_frameCount;
+    private float m_totalFrameTime;
 
     private void Update()
     {
-        frameCount++;
-        totalFrameTime += Time.unscaledDeltaTime;
+        m_frameCount++;
+        m_totalFrameTime += Time.unscaledDeltaTime;
 
-        if (frameCount >= 1000)
+        if (m_frameCount >= 1000)
         {
-            float averageFPS = frameCount / totalFrameTime;
+            float averageFPS = m_frameCount / m_totalFrameTime;
             string logText = $"Average FPS: {averageFPS:F2}";
 
             //Debug.Log(logText);
-            tmpText.text = logText;
+            m_tmpText.text = logText;
 
-            frameCount = 0;
-            totalFrameTime = 0f;
+            m_frameCount = 0;
+            m_totalFrameTime = 0f;
         }
     }
 }

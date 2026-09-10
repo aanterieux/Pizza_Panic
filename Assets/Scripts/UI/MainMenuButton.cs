@@ -9,7 +9,7 @@ public class MainMenuButton : MonoBehaviour
         QUIT
     }
 
-    [SerializeField] private ButtonType buttonType = ButtonType.PLAY;
+    [SerializeField] private ButtonType m_buttonType = ButtonType.PLAY;
 
     private void StartGame()
     {
@@ -24,7 +24,7 @@ public class MainMenuButton : MonoBehaviour
 
     public void OnClick()
     {
-        switch (buttonType)
+        switch (m_buttonType)
         {
             case ButtonType.PLAY: StartGame(); break;
             case ButtonType.QUIT: QuitGame(); break;

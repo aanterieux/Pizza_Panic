@@ -23,64 +23,63 @@ public class Zombie : MonoBehaviour
     }
 
     [Header("- Health -")]
-    [SerializeField] private int health = 25;
-    [SerializeField] private int maxHealth = 25;
+    [SerializeField] private int m_health = 25;
+    [SerializeField] private int m_maxHealth = 25;
 
     [Header("- Attack -")]
-    [SerializeField] private float attackCooldown = 0.8f;
-    [SerializeField] private int damage = 15;
+    [SerializeField] private float m_attackCooldown = 0.8f;
+    [SerializeField] private int m_damage = 15;
 
     [Header("- Misc -")]
-    [SerializeField] private ZombieState state = ZombieState.CHASE;
-    [SerializeField] private uint destinationUpdatesPerSecond = 16U;
-    [SerializeField] private float burySpeed = 5f;
-    [SerializeField] private float distanceToAttack = 0.5f;
-    [SerializeField] private float distanceToChase = 0.75f;
+    [SerializeField] private ZombieState m_state = ZombieState.CHASE;
+    [SerializeField] private uint m_destinationUpdatesPerSecond = 16U;
+    [SerializeField] private float m_burySpeed = 5f;
+    [SerializeField] private float m_distanceToAttack = 0.5f;
+    [SerializeField] private float m_distanceToChase = 0.75f;
 
     private const int EFFECT_COUNT = ((int)(ZombieEffect.COUNT)) - 2;
 
-    private NavMeshAgent agent = null;
-    private Transform playerTransform = null;
-    private CapsuleCollider capsule = null;
-    private ZombieSpawner origin = null;
-    private float[] effectsStrength = new float[EFFECT_COUNT];
-    private float[] effectsDuration = new float[EFFECT_COUNT];
-    private float[] effectsTimer = new float[EFFECT_COUNT];
-    private bool[] hasEffect = new bool[EFFECT_COUNT];
-    private float attackTimer = 0f;
-    private float baseMoveSpeed = 0f;
-    private float destinationUpdateTimer = 0f;
-    private bool isFrozenOrPowerless = false;
+    private NavMeshAgent m_agent = null;
+    private Transform m_playerTransform = null;
+    private CapsuleCollider m_capsule = null;
+    private ZombieSpawner m_origin = null;
+    private float[] m_effectsStrength = new float[EFFECT_COUNT];
+    private float[] m_effectsDuration = new float[EFFECT_COUNT];
+    private float[] m_effectsTimer = new float[EFFECT_COUNT];
+    private bool[] m_hasEffect = new bool[EFFECT_COUNT];
+    private float m_attackTimer = 0f;
+    private float m_baseMoveSpeed = 0f;
+    private float m_destinationUpdateTimer = 0f;
 
-    public bool IsAttacking
+    public bool m_IsAttacking
     {
-        get => (state == ZombieState.ATTACK && attackTimer > 0f);
+        get => (m_state == ZombieState.ATTACK && m_attackTimer > 0f);
     }
 
 
     private void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
-        capsule = GetComponent<CapsuleCollider>();
+        m_agent = GetComponent<NavMeshAgent>();
+        m_capsule = GetComponent<CapsuleCollider>();
 
         VaryStatsAndSize();
 
-        baseMoveSpeed = agent.speed;
+        m_baseMoveSpeed = m_agent.speed;
 
-        if (health <= 0)
+        if (m_health <= 0)
         {
-            state = ZombieState.DEAD;
+            m_state = ZombieState.DEAD;
         }
 
-        if (state == ZombieState.DEAD)
+        if (m_state == ZombieState.DEAD)
         {
-            health = 0;
+            m_health = 0;
         }
     }
 
     private void Start()
     {
-        playerTransform = FindAnyObjectByType<PlayerController>().transform;
+        m_playerTransform = FindAnyObjectByType<PlayerController>().transform;
     }
 
     private void Update()
@@ -91,11 +90,11 @@ public class Zombie : MonoBehaviour
 
     private void OnValidate()
     {
-        if (state != ZombieState.DEAD)
+        if (m_state != ZombieState.DEAD)
         {
-            if (maxHealth < health)
+            if (m_maxHealth < m_health)
             {
-                maxHealth = health;
+                m_maxHealth = m_health;
             }
         }
     }
@@ -103,20 +102,15 @@ public class Zombie : MonoBehaviour
 
     private void VaryStatsAndSize()
     {
-        if (Random.Range(0, 10001) == 0)
-        {
-            isFrozenOrPowerless = true;
-        }
-
         int healthChange = Random.Range(-7, 16);
         float speedChange = Random.Range(-1.5f, 1.5f);
         float cooldownChange = Random.Range(-0.05f, 0.05f);
         int damageChange = Random.Range(-5, 6);
 
-        health += healthChange;
-        agent.speed += speedChange;
-        attackCooldown += cooldownChange;
-        damage += damageChange;
+        m_health += healthChange;
+        m_agent.speed += speedChange;
+        m_attackCooldown += cooldownChange;
+        m_damage += damageChange;
 
         float healthStrength =
             Mathf.InverseLerp(-7f, 15f, healthChange) * 2f - 1f;
@@ -135,14 +129,14 @@ public class Zombie : MonoBehaviour
         float statMean =
             Mathf.Lerp(0.66f, 1.25f, (combatStrength + 1f) / 2f);
 
-        capsule.radius *= statMean;
-        capsule.height *= statMean;
-        capsule.transform.localScale *= statMean;
+        m_capsule.radius *= statMean;
+        m_capsule.height *= statMean;
+        m_capsule.transform.localScale *= statMean;
     }
 
     private void ManageStates()
     {
-        switch (state)
+        switch (m_state)
         {
             case ZombieState.IDLE:
                 {
@@ -151,55 +145,55 @@ public class Zombie : MonoBehaviour
                 break;
             case ZombieState.CHASE:
                 {
-                    if (!agent || !agent.enabled || !agent.isOnNavMesh)
+                    if (!m_agent || !m_agent.enabled || !m_agent.isOnNavMesh)
                     {
                         return;
                     }
 
                     UpdateDestination();
 
-                    if (GetDistanceToPlayer() <= distanceToAttack)
+                    if (GetDistanceToPlayer() <= m_distanceToAttack)
                     {
-                        state = ZombieState.ATTACK;
+                        m_state = ZombieState.ATTACK;
                     }
                 }
                 break;
             case ZombieState.ATTACK:
                 {
-                    attackTimer += Time.deltaTime;
+                    m_attackTimer += Time.deltaTime;
 
-                    if (attackTimer > attackCooldown)
+                    if (m_attackTimer > m_attackCooldown)
                     {
-                        playerTransform
+                        m_playerTransform
                             .GetComponent<PlayerStatManager>()
-                            .TakeDamage(damage);
+                            .TakeDamage(m_damage);
 
-                        attackTimer = 0f;
+                        m_attackTimer = 0f;
                     }
 
-                    if (GetDistanceToPlayer() > distanceToChase)
+                    if (GetDistanceToPlayer() > m_distanceToChase)
                     {
-                        state = ZombieState.CHASE;
+                        m_state = ZombieState.CHASE;
                     }
                 }
                 break;
             case ZombieState.DEAD:
                 {
-                    agent.enabled = false;
-                    capsule.enabled = false;
+                    m_agent.enabled = false;
+                    m_capsule.enabled = false;
 
-                    transform.Translate(Time.deltaTime * burySpeed * Vector3.down);
+                    transform.Translate(Time.deltaTime * m_burySpeed * Vector3.down);
 
                     if (transform.position.y + 1f < -0.5f)
                     {
-                        if (origin)
+                        if (m_origin)
                         {
-                            origin.NotifyZombieDeath();
+                            m_origin.NotifyZombieDeath();
                         }
 
-                        Gun gun = playerTransform
+                        Gun gun = m_playerTransform
                             .GetComponent<PlayerInventory>()
-                            .CurrentItem as Gun;
+                            .m_CurrentItem as Gun;
                         gun.GiveAmmos(3);
 
                         Destroy(gameObject);
@@ -215,63 +209,63 @@ public class Zombie : MonoBehaviour
 
     private void ManageEffects()
     {
-        if (state == ZombieState.DEAD)
+        if (m_state == ZombieState.DEAD)
         {
             return;
         }
 
-        for (int i = 0; i < hasEffect.Length; ++i)
+        for (int i = 0; i < m_hasEffect.Length; ++i)
         {
-            if (!hasEffect[i] || ((ZombieEffect)(i)) == ZombieEffect.NONE)
+            if (!m_hasEffect[i] || ((ZombieEffect)(i)) == ZombieEffect.NONE)
             {
                 continue;
             }
 
-            effectsTimer[i] += Time.deltaTime;
+            m_effectsTimer[i] += Time.deltaTime;
 
-            if (effectsTimer[i] > effectsDuration[i])
+            if (m_effectsTimer[i] > m_effectsDuration[i])
             {
-                hasEffect[i] = false;
-                effectsTimer[i] = 0f;
+                m_hasEffect[i] = false;
+                m_effectsTimer[i] = 0f;
 
-                if (hasEffect[(int)(ZombieEffect.SLOWNESS)])
+                if (m_hasEffect[(int)(ZombieEffect.SLOWNESS)])
                 {
-                    agent.speed = baseMoveSpeed;
+                    m_agent.speed = m_baseMoveSpeed;
                 }
 
                 return;
             }
         }
 
-        if (hasEffect[(int)(ZombieEffect.SLOWNESS)])
+        if (m_hasEffect[(int)(ZombieEffect.SLOWNESS)])
         {
             float normalisedSlowness =
                 1f -
-                0.01f * effectsStrength[(int)(ZombieEffect.SLOWNESS)];
+                0.01f * m_effectsStrength[(int)(ZombieEffect.SLOWNESS)];
 
-            agent.speed = baseMoveSpeed * normalisedSlowness;
+            m_agent.speed = m_baseMoveSpeed * normalisedSlowness;
         }
     }
 
     private void UpdateDestination()
     {
-        destinationUpdateTimer += Time.deltaTime;
+        m_destinationUpdateTimer += Time.deltaTime;
 
-        if (destinationUpdateTimer >= 1f / destinationUpdatesPerSecond)
+        if (m_destinationUpdateTimer >= 1f / m_destinationUpdatesPerSecond)
         {
-            agent.SetDestination(playerTransform.position);
-            destinationUpdateTimer = 0f;
+            m_agent.SetDestination(m_playerTransform.position);
+            m_destinationUpdateTimer = 0f;
         }
     }
 
     public void TriggerAttack()
     {
-        state = ZombieState.ATTACK;
+        m_state = ZombieState.ATTACK;
     }
 
     private void Die()
     {
-        state = ZombieState.DEAD;
+        m_state = ZombieState.DEAD;
     }
 
     private float GetDistanceToPlayer()
@@ -279,26 +273,26 @@ public class Zombie : MonoBehaviour
         return
             Vector3.Distance(
                 transform.position,
-                playerTransform.position
+                m_playerTransform.position
             );
     }
 
 
     public void LinkToSpawner(ZombieSpawner _spawner)
     {
-        origin = _spawner;
+        m_origin = _spawner;
     }
 
     public void TakeDamage(int _damage)
     {
-        if (state == ZombieState.DEAD)
+        if (m_state == ZombieState.DEAD)
         {
             return;
         }
 
-        health -= _damage;
+        m_health -= _damage;
 
-        if (health <= 0)
+        if (m_health <= 0)
         {
             Die();
         }
@@ -314,14 +308,14 @@ public class Zombie : MonoBehaviour
 
         int effectIndex = (int)(_effect);
 
-        if (hasEffect[effectIndex])
+        if (m_hasEffect[effectIndex])
         {
             return;
         }
 
-        hasEffect[effectIndex] = true;
-        effectsStrength[effectIndex] = _strengthInPercentage;
-        effectsDuration[effectIndex] = _duration;
-        effectsTimer[effectIndex] = 0f;
+        m_hasEffect[effectIndex] = true;
+        m_effectsStrength[effectIndex] = _strengthInPercentage;
+        m_effectsDuration[effectIndex] = _duration;
+        m_effectsTimer[effectIndex] = 0f;
     }
 }

@@ -3,23 +3,23 @@ using UnityEngine;
 public class ZombieManager : MonoBehaviour
 {
     [SerializeField] [Range(0, 1000)]
-     private int maxZombieCount = 50;
-    [SerializeField] private bool dontDestroyOnLoad = true;
+     private int m_maxZombieCount = 100;
+    [SerializeField] private bool m_dontDestroyOnLoad = true;
 
-    private int zombieCount = 0;
+    private int m_zombieCount = 0;
 
-    public int ZombieCount
+    public int m_ZombieCount
     {
-        get => zombieCount;
+        get => m_zombieCount;
     }
-    public bool IsSpawnAllowed
+    public bool m_IsSpawnAllowed
     {
-        get => (zombieCount < maxZombieCount);
+        get => (m_zombieCount < m_maxZombieCount);
     }
 
     private void Awake()
     {
-        if (dontDestroyOnLoad)
+        if (m_dontDestroyOnLoad)
         {
             DontDestroyOnLoad(gameObject);
         }
@@ -28,15 +28,15 @@ public class ZombieManager : MonoBehaviour
 
     public void IncrementZombieCount()
     {
-        zombieCount++;
+        m_zombieCount++;
     }
     public void DecrementZombieCount()
     {
-        if (zombieCount == 0)
+        if (m_zombieCount == 0)
         {
             return;
         }
 
-        zombieCount--;
+        m_zombieCount--;
     }
 }

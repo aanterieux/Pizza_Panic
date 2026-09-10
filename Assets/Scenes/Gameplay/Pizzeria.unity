@@ -198,6 +198,7 @@ GameObject:
   - component: {fileID: 60347574}
   - component: {fileID: 60347573}
   - component: {fileID: 60347572}
+  - component: {fileID: 60347577}
   m_Layer: 0
   m_Name: Gun
   m_TagString: Untagged
@@ -217,13 +218,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3415c14a301cfa489cdd61a0be8bd0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gun
-  hitboxFactor: 1.25
-  ammoText: {fileID: 1292014544}
-  shotsPerSecond: 4
-  shotDamage: 5
-  ammosPerRound: 10
-  roundNb: 3
-  reloadDuration: 1.5
+  m_hitboxFactor: 1.25
+  m_distanceWithHolder: 1.5
+  m_ammoText: {fileID: 1292014544}
+  m_shotsPerSecond: 4
+  m_damagePerShot: 5
+  m_magazineCapacity: 10
+  m_startingMagazineCount: 3
+  m_reloadDuration: 1.5
 --- !u!136 &60347573
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -319,6 +321,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!54 &60347577
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60347571}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!43 &70117048
 Mesh:
   m_ObjectHideFlags: 0
@@ -3806,10 +3835,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74118fbd4a0d5684d88f48d169f98b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Consumable
-  hitboxFactor: 1.25
-  baseDamageOnHit: 1
-  type: 0
-  mexicanSauceMusic: {fileID: 0}
+  m_hitboxFactor: 1.25
+  m_distanceWithHolder: 1.5
+  m_baseDamageOnHit: 1
+  m_type: 0
+  m_mexicanSauceMusic: {fileID: 0}
 --- !u!54 &786419180
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4695,10 +4725,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74118fbd4a0d5684d88f48d169f98b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Consumable
-  hitboxFactor: 1.25
-  baseDamageOnHit: 1
-  type: 2
-  mexicanSauceMusic: {fileID: 8300000, guid: 1ca8939c2cf8e6845953183858f6f272, type: 3}
+  m_hitboxFactor: 1.25
+  m_distanceWithHolder: 1.5
+  m_baseDamageOnHit: 1
+  m_type: 2
+  m_mexicanSauceMusic: {fileID: 8300000, guid: 1ca8939c2cf8e6845953183858f6f272, type: 3}
 --- !u!54 &1019890703
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4969,10 +5000,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74118fbd4a0d5684d88f48d169f98b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Consumable
-  hitboxFactor: 1.25
-  baseDamageOnHit: 1
-  type: 0
-  mexicanSauceMusic: {fileID: 0}
+  m_hitboxFactor: 1.25
+  m_distanceWithHolder: 1.5
+  m_baseDamageOnHit: 1
+  m_type: 0
+  m_mexicanSauceMusic: {fileID: 0}
 --- !u!54 &1065169839
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5472,11 +5504,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '10
-
-    -----
-
-    3'
+  m_text: 10/20
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
@@ -6553,10 +6581,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74118fbd4a0d5684d88f48d169f98b03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Consumable
-  hitboxFactor: 1.25
-  baseDamageOnHit: 1
-  type: 0
-  mexicanSauceMusic: {fileID: 0}
+  m_hitboxFactor: 1.25
+  m_distanceWithHolder: 1.5
+  m_baseDamageOnHit: 1
+  m_type: 0
+  m_mexicanSauceMusic: {fileID: 0}
 --- !u!54 &1595845361
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9715,14 +9744,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8264782154850830273, guid: edcf857426b6eaf4ba43da264323d866, type: 3}
-      propertyPath: damageOverlay
-      value: 
-      objectReference: {fileID: 1803643850}
-    - target: {fileID: 8264782154850830273, guid: edcf857426b6eaf4ba43da264323d866, type: 3}
-      propertyPath: healthTextValue
-      value: 
-      objectReference: {fileID: 267139327}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

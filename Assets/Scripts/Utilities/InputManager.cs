@@ -7,42 +7,42 @@ using UnityEngine.SceneManagement;
 // Needs an instance for some features
 public class InputManager : MonoBehaviour
 {
-    public static Keyboard CurrentKeyboard
+    public static Keyboard s_CurrentKeyboard
     {
         get => Keyboard.current;
     }
-    public static Mouse CurrentMouse
+    public static Mouse s_CurrentMouse
     {
         get => Mouse.current;
     }
-    public static Gamepad CurrentGamepad
+    public static Gamepad s_CurrentGamepad
     {
         get => Gamepad.current;
     }
 
-    public static StickControl GamepadStick_Left
+    public static StickControl s_GamepadStick_Left
     {
-        get => CurrentGamepad.leftStick;
+        get => s_CurrentGamepad.leftStick;
     }
-    public static StickControl GamepadStick_Right
+    public static StickControl s_GamepadStick_Right
     {
-        get => CurrentGamepad.rightStick;
-    }
-
-    public static Vector2 MouseDelta
-    {
-        get => CurrentMouse.delta.ReadValue();
-    }
-    public static Vector2 GamepadDelta_Left
-    {
-        get => GamepadStick_Left.ReadValue();
-    }
-    public static Vector2 GamepadDelta_Right
-    {
-        get => GamepadStick_Right.ReadValue();
+        get => s_CurrentGamepad.rightStick;
     }
 
-    public static int GameDeviceCount
+    public static Vector2 s_MouseDelta
+    {
+        get => s_CurrentMouse.delta.ReadValue();
+    }
+    public static Vector2 s_GamepadDelta_Left
+    {
+        get => s_GamepadStick_Left.ReadValue();
+    }
+    public static Vector2 s_GamepadDelta_Right
+    {
+        get => s_GamepadStick_Right.ReadValue();
+    }
+
+    public static int s_GameDeviceCount
     {
         get =>
             InputSystem.devices.Count(
@@ -53,60 +53,60 @@ public class InputManager : MonoBehaviour
             );
     }
 
-    public static bool KeyboardConnected
+    public static bool s_KeyboardConnected
     {
-        get => (CurrentKeyboard != null);
+        get => (s_CurrentKeyboard != null);
     }
-    public static bool MouseConnected
+    public static bool s_MouseConnected
     {
-        get => (CurrentMouse != null);
+        get => (s_CurrentMouse != null);
     }
-    public static bool GamepadConnected
+    public static bool s_GamepadConnected
     {
-        get => (CurrentGamepad != null);
+        get => (s_CurrentGamepad != null);
     }
-    public static bool NoGameDeviceConnected
+    public static bool s_NoGameDeviceConnected
     {
-        get => (GameDeviceCount == 0);
+        get => (s_GameDeviceCount == 0);
     }
 
-    public static bool KeyboardPress
+    public static bool s_KeyboardPress
     {
-        get => CurrentKeyboard.anyKey.IsPressed();
+        get => s_CurrentKeyboard.anyKey.IsPressed();
     }
-    public static bool MousePress
+    public static bool s_MousePress
     {
         get =>
-            (CurrentMouse.allControls.Count(
+            (s_CurrentMouse.allControls.Count(
                 x =>
                     x is ButtonControl &&
                     x.IsPressed()
             ) > 0);
     }
-    public static bool GamepadPress
+    public static bool s_GamepadPress
     {
         get =>
-            (CurrentGamepad.allControls.Count(
+            (s_CurrentGamepad.allControls.Count(
                 x =>
                     x is ButtonControl &&
                     x.IsPressed()
             ) > 0);
     }
-    public static bool GameDevicePress
+    public static bool s_GameDevicePress
     {
-        get => (KeyboardPress || MousePress || GamepadPress);
+        get => (s_KeyboardPress || s_MousePress || s_GamepadPress);
     }
 
-    [SerializeField] private bool dontDestroyOnLoad = true;
+    [SerializeField] private bool m_dontDestroyOnLoad = true;
 
     private void Awake()
     {
-        if (dontDestroyOnLoad)
+        if (m_dontDestroyOnLoad)
         {
             DontDestroyOnLoad(gameObject);
         }
 
-        if (!MouseConnected)
+        if (!s_MouseConnected)
         {
             return;
         }
@@ -116,7 +116,7 @@ public class InputManager : MonoBehaviour
             Screen.height
         );
 
-        CurrentMouse.WarpCursorPosition(screenCenter);
+        s_CurrentMouse.WarpCursorPosition(screenCenter);
 
         if (SceneManager.GetActiveScene().name != "MainMenu")
         {

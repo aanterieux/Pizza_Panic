@@ -1,40 +1,63 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Item : MonoBehaviour
 {
-    protected delegate void OnPickupDelegate(object _optional = null);
-    protected delegate void OnReleaseDelegate(object _optional = null);
-
     [Header("-- Item --")]
     [SerializeField] [Min(0.01f)]
-    private float hitboxFactor = 1.25f;
+     private float m_hitboxFactor = 1.25f;
+    [SerializeField] [Min(0.75f)]
+     private float m_distanceWithHolder = 1.5f;
 
-    private Vector3 baseSize = Vector3.one;
-    private float baseRadius = 0.5f;
-    private float baseHeight = 2f;
-    private float hitboxFactorCpy = 0f;
-    private bool hitboxAdjustmentTrigger = false;
-    private bool isPickedUp = false;
+    private Rigidbody m_rb = null;
+    private Vector3 m_baseSize = Vector3.one;
+    private float m_baseRadius = 0.5f;
+    private float m_baseHeight = 2f;
+    private float m_hitboxFactorCpy = 0f;
+    private bool m_hitboxAdjustmentTrigger = false;
+    private bool m_isPickedUp = false;
 
-    protected OnPickupDelegate pickupDelegate_ = null;
-    protected OnReleaseDelegate releaseDelegate_ = null;
-
-    protected bool HitboxAdjustmentTrigger_
+    protected Transform m_holderTransform_ = null;
+    
+    protected Rigidbody m_Rb_
     {
-        get => hitboxAdjustmentTrigger;
+        get
+        {
+            if (!m_rb)
+            {
+                m_rb = GetComponent<Rigidbody>();
+            }
+
+            return m_rb;
+        }
+    }
+    protected Transform m_HolderTransform_
+    {
+        get => m_holderTransform_;
+    }
+    protected bool m_HitboxAdjustmentTrigger_
+    {
+        get => m_hitboxAdjustmentTrigger;
     }
 
-    public bool IsPickedUp
+    public bool m_IsPickedUp
     {
-        get => isPickedUp;
+        get => m_isPickedUp;
     }
+
+
+    private void Start()
+    {
+        m_rb = GetComponent<Rigidbody>();
+    }
+
 
     protected void OnValidate()
     {
-        if (hitboxFactorCpy != hitboxFactor)
+        if (m_hitboxFactorCpy != m_hitboxFactor)
         {
-            hitboxAdjustmentTrigger = true;
-            hitboxFactorCpy = hitboxFactor;
+            m_hitboxAdjustmentTrigger = true;
+            m_hitboxFactorCpy = m_hitboxFactor;
         }
     }
 
@@ -45,20 +68,20 @@ public class Item : MonoBehaviour
         {
             case BoxCollider:
                 {
-                    baseSize = (_collider as BoxCollider).size;
+                    m_baseSize = (_collider as BoxCollider).size;
                 }
                 break;
             case SphereCollider:
                 {
-                    baseRadius = (_collider as SphereCollider).radius;
+                    m_baseRadius = (_collider as SphereCollider).radius;
                 }
                 break;
             case CapsuleCollider:
                 {
                     CapsuleCollider cc = (_collider as CapsuleCollider);
 
-                    baseRadius = cc.radius;
-                    baseHeight = cc.height;
+                    m_baseRadius = cc.radius;
+                    m_baseHeight = cc.height;
                 }
                 break;
             default:
@@ -72,7 +95,7 @@ public class Item : MonoBehaviour
     {
         if (!_collider)
         {
-            Debug.LogWarning("Cannot adjust item hitbox: collider is null.");
+            LogUtility.LogWarning("Cannot adjust item hitbox: collider is null");
             return;
         }
 
@@ -80,19 +103,19 @@ public class Item : MonoBehaviour
         {
             case BoxCollider:
                 {
-                    (_collider as BoxCollider).size = hitboxFactor * baseSize;
+                    (_collider as BoxCollider).size = m_hitboxFactor * m_baseSize;
                 }
                 break;
             case SphereCollider:
                 {
-                    (_collider as SphereCollider).radius = hitboxFactor * baseRadius;
+                    (_collider as SphereCollider).radius = m_hitboxFactor * m_baseRadius;
                 }
                 break;
             case CapsuleCollider:
                 {
                     CapsuleCollider cc = (_collider as CapsuleCollider);
-                    cc.radius = hitboxFactor * baseRadius;
-                    cc.height = hitboxFactor * baseHeight;
+                    cc.radius = m_hitboxFactor * m_baseRadius;
+                    cc.height = m_hitboxFactor * m_baseHeight;
                 }
                 break;
             default:
@@ -101,18 +124,48 @@ public class Item : MonoBehaviour
                 break;
         }
 
-        hitboxAdjustmentTrigger = false;
+        m_hitboxAdjustmentTrigger = false;
     }
 
 
-    public void OnPickup()
+    public void OnPickup(Transform _holderTransform)
     {
-        pickupDelegate_?.Invoke();
-        isPickedUp = true;
+        bool isHolderNull = (_holderTransform == null);
+
+        if (isHolderNull)
+        {
+            LogUtility.LogWarning("Cannot pickup item: _holderTransform is null");
+            return;
+        }
+
+        bool isSameHolder = (_holderTransform == m_holderTransform_);
+
+        if (isSameHolder)
+        {
+            LogUtility.LogWarning("Cannot pickup item: _holderTransform hasn't changed");
+            return;
+        }
+
+        m_holderTransform_ = _holderTransform;
+
+        m_rb.isKinematic = true;
+        m_rb.useGravity = false;
+
+        transform.SetParent(
+            m_holderTransform_
+        );
+        transform.localPosition = new Vector3(0f, 0f, m_distanceWithHolder);
+
+        m_isPickedUp = true;
     }
     public void OnRelease()
     {
-        releaseDelegate_?.Invoke();
-        isPickedUp = false;
+        m_rb.isKinematic = false;
+        m_rb.useGravity = true;
+
+        transform.SetParent(null);
+
+        m_holderTransform_ = null;
+        m_isPickedUp = false;
     }
 }

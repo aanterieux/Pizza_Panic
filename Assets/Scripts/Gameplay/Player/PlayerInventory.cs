@@ -1,28 +1,48 @@
 using UnityEngine;
 
-public class PlayerInventory : MonoBehaviour
+public class PlayerInventory : PlayerComponent
 {
-    [SerializeField] private Item currentItem = null;
+    [SerializeField] private Item m_currentItem = null;
 
-    private Item currentItemCpy = null;
+    private Item m_currentItemCpy = null;
 
-    public Item CurrentItem
+    public Item m_CurrentItem
     {
-        get => currentItem;
+        get => m_currentItem;
     }
 
     private void OnValidate()
     {
-        if (currentItemCpy != currentItem)
+        if (m_currentItemCpy != m_currentItem)
         {
-            currentItem.OnPickup();
+            SetCurrentItem(m_currentItem);
 
-            currentItemCpy = currentItem;
+            if (m_currentItem)
+            {
+                m_currentItem.OnPickup(m_CamTransform_);
+            }
+
+            m_currentItemCpy = m_currentItem;
         }
     }
 
+
     public void SetCurrentItem(Item _item)
     {
-        currentItem = _item;
+        if (m_currentItem == _item)
+        {
+            return;
+        }
+
+        if (m_currentItem)
+        {
+            m_currentItem.OnRelease();
+        }
+
+        m_currentItem = _item;
+    }
+    public void ClearCurrentItem()
+    {
+        m_currentItem = null;
     }
 }

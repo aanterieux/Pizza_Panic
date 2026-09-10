@@ -2,77 +2,77 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerStatManager : MonoBehaviour
+public class PlayerStatManager : PlayerComponent
 {
     [Header("- Health -")]
     [SerializeField] [Min(0)]
-     private int health = 100;
+     private int m_health = 100;
     [SerializeField] [Min(1)]
-     private int maxHealth = 100;
+     private int m_maxHealth = 100;
     [SerializeField] [Min(0f)]
-    private float regenerationTriggerDelay = 2f;
+    private float m_regenerationTriggerDelay = 2f;
     [SerializeField] [Min(0f)]
-     private float regenerationsPerSec = 10f;
+     private float m_regenerationsPerSec = 10f;
     [SerializeField] [Range(0, 100)]
-    private int healthPerStep = 20;
+    private int m_healthPerStep = 20;
 
     [Header("- Attack -")]
     [SerializeField] [Min(1.5f)]
-     private float rangedAttackReach = 15f;
+     private float m_rangedAttackReach = 15f;
     [SerializeField] [Min(0.5f)]
-     private float meleeAttackReach = 0.75f;
+     private float m_meleeAttackReach = 0.75f;
     [SerializeField] [Min(0f)]
-     private float meleeAttackCooldown = 0.5f;
+     private float m_meleeAttackCooldown = 0.5f;
     [SerializeField] [Min(0)]
-     private int meleeAttackDamage = 2;
+     private int m_meleeAttackDamage = 2;
 
     [Header("- UI- ")]
-    [SerializeField] private Image damageOverlay = null;
-    [SerializeField] private TextMeshProUGUI healthTextValue = null;
+    [SerializeField] private Image m_damageOverlay = null;
+    [SerializeField] private TextMeshProUGUI m_healthTextValue = null;
 
     [Header("- Misc -")]
     [SerializeField] [Min(0f)]
-     private float pickupReach = 5f;
+     private float m_pickupReach = 5f;
     [SerializeField] [Min(0f)]
-     private float throwForce = 10f;
-    [SerializeField] private bool isDead = false;
+     private float m_throwForce = 10f;
+    [SerializeField] private bool m_isDead = false;
 
-    private float regenerationTimer = 0f;
-    private int healthCpy = 0;
-    private int healthBuffer = 0;
-    private bool regenerationDelayTrigger = true;
-    private bool isDeadCpy = false;
+    private float m_regenerationTimer = 0f;
+    private int m_healthCpy = 0;
+    private int m_healthBuffer = 0;
+    private bool m_regenerationDelayTrigger = true;
+    private bool m_isDeadCpy = false;
 
-    public float RangedAttackReach
+    public float m_RangedAttackReach
     {
-        get => rangedAttackReach;
+        get => m_rangedAttackReach;
     }
-    public float MeleeAttackReach
+    public float m_MeleeAttackReach
     {
-        get => meleeAttackReach;
+        get => m_meleeAttackReach;
     }
-    public float MeleeAttackCooldown
+    public float m_MeleeAttackCooldown
     {
-        get => meleeAttackCooldown;
+        get => m_meleeAttackCooldown;
     }
-    public int MeleeAttackDamage
+    public int m_MeleeAttackDamage
     {
-        get => meleeAttackDamage;
+        get => m_meleeAttackDamage;
     }
 
-    public float PickupReach
+    public float m_PickupReach
     {
-        get => pickupReach;
+        get => m_pickupReach;
     }
-    public float ThrowForce
+    public float m_ThrowForce
     {
-        get => throwForce;
+        get => m_throwForce;
     }
 
 
     private void Awake()
     {
-        healthBuffer = health;
+        m_healthBuffer = m_health;
     }
 
     private void Update()
@@ -82,21 +82,21 @@ public class PlayerStatManager : MonoBehaviour
         //    return;
         //}
 
-        if (health < maxHealth)
+        if (m_health < m_maxHealth)
         {
-            if (regenerationDelayTrigger)
+            if (m_regenerationDelayTrigger)
             {
-                regenerationTimer = -regenerationTriggerDelay;
-                regenerationDelayTrigger = false;
+                m_regenerationTimer = -m_regenerationTriggerDelay;
+                m_regenerationDelayTrigger = false;
             }
 
             RegenerateHealth();
         }
 
-        if (healthCpy != health)
+        if (m_healthCpy != m_health)
         {
             TryAdaptDamageOverlayAlpha();
-            healthCpy = health;
+            m_healthCpy = m_health;
         }
     }
 
@@ -104,7 +104,7 @@ public class PlayerStatManager : MonoBehaviour
     {
         Zombie zombie = _collider.GetComponent<Zombie>();
 
-        if (zombie && !zombie.IsAttacking)
+        if (zombie && !zombie.m_IsAttacking)
         {
             zombie.TriggerAttack();
         }
@@ -112,34 +112,34 @@ public class PlayerStatManager : MonoBehaviour
 
     private void OnValidate()
     {
-        if (isDeadCpy != isDead)
+        if (m_isDeadCpy != m_isDead)
         {
-            health =
-                (isDead)
+            m_health =
+                (m_isDead)
                     ? 0
-                    : healthBuffer;
+                    : m_healthBuffer;
 
-            isDeadCpy = isDead;
+            m_isDeadCpy = m_isDead;
         }
-        else if (healthBuffer != health)
+        else if (m_healthBuffer != m_health)
         {
-            healthBuffer = health;
+            m_healthBuffer = m_health;
             TryAdaptHealthText();
         }
 
-        if (maxHealth < health)
+        if (m_maxHealth < m_health)
         {
             // When game is running
             // => Clamp health normally
             if (Application.isPlaying)
             {
-                health = maxHealth;
+                m_health = m_maxHealth;
             }
             // When game is not running
             // => Adapt maxHealth to health
             else
             {
-                maxHealth = health;
+                m_maxHealth = m_health;
             }
         }
     }
@@ -147,69 +147,69 @@ public class PlayerStatManager : MonoBehaviour
 
     private void RegenerateHealth()
     {
-        regenerationTimer += Time.deltaTime;
+        m_regenerationTimer += Time.deltaTime;
 
-        if (regenerationTimer >= 1f / regenerationsPerSec)
+        if (m_regenerationTimer >= 1f / m_regenerationsPerSec)
         {
-            health += healthPerStep;
-            regenerationTimer = 0f;
+            m_health += m_healthPerStep;
+            m_regenerationTimer = 0f;
         }
 
-        if (health > maxHealth)
+        if (m_health > m_maxHealth)
         {
-            health = maxHealth;
+            m_health = m_maxHealth;
         }
 
-        healthBuffer = health;
+        m_healthBuffer = m_health;
 
         TryAdaptHealthText();
     }
 
     private void TryAdaptDamageOverlayAlpha()
     {
-        if (!damageOverlay)
+        if (!m_damageOverlay)
         {
             return;
         }
 
-        Color overlayColour = damageOverlay.color;
-        overlayColour.a = (1f - (float)(health) / maxHealth);
-        damageOverlay.color = overlayColour;
+        Color overlayColour = m_damageOverlay.color;
+        overlayColour.a = (1f - (float)(m_health) / m_maxHealth);
+        m_damageOverlay.color = overlayColour;
     }
 
     private void TryAdaptHealthText()
     {
-        if (!healthTextValue)
+        if (!m_healthTextValue)
         {
             return;
         }
 
-        float percentage = health / (float)(maxHealth);
+        float percentage = m_health / (float)(m_maxHealth);
         Color textColour = Color.black;
         textColour.r = 1f - percentage;
         textColour.g = percentage;
 
-        healthTextValue.text = health.ToString();
-        healthTextValue.color = textColour;
+        m_healthTextValue.text = m_health.ToString();
+        m_healthTextValue.color = textColour;
     }
 
 
     public void TakeDamage(int _damage)
     {
-        if (isDead)
+        if (m_isDead)
         {
             return;
         }
 
-        health -= _damage;
-        regenerationDelayTrigger = true;
+        m_health -= _damage;
+        m_regenerationDelayTrigger = true;
 
-        if (health <= 0)
+        if (m_health <= 0)
         {
-            isDead = true;
+            m_isDead = true;
         }
 
-        healthBuffer = health;
+        m_healthBuffer = m_health;
 
         TryAdaptHealthText();
     }

@@ -9,53 +9,51 @@ public class Consumable : Holdable
         MEXICAN_SAUCE
     }
 
-    [SerializeField] private ConsumableType type = ConsumableType.CHEESE_SAUCE;
-    [SerializeField] private AudioClip mexicanSauceMusic = null;
+    [SerializeField] private ConsumableType m_type = ConsumableType.CHEESE_SAUCE;
+    [SerializeField] private AudioClip m_mexicanSauceMusic = null;
 
-    private Collider consumableCollider = null;
-    private AudioSource audioSource = null;
-    private bool hasStartedMusicOnce = false;
-    private bool canDestroySelf = true;
+    private Collider m_consumableCollider = null;
+    private AudioSource m_audioSource = null;
+    private bool m_hasStartedMusicOnce = false;
+    private bool m_canDestroySelf = false;
 
     private void Awake()
     {
-        if (!consumableCollider)
+        if (!m_consumableCollider)
         {
-            consumableCollider = GetComponent<Collider>();
+            m_consumableCollider = GetComponent<Collider>();
         }
 
-        if (type == ConsumableType.MEXICAN_SAUCE)
+        if (m_type == ConsumableType.MEXICAN_SAUCE)
         {
-            audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.clip = mexicanSauceMusic;
+            m_audioSource = gameObject.AddComponent<AudioSource>();
+            m_audioSource.clip = m_mexicanSauceMusic;
 
-            canDestroySelf = false;
+            m_canDestroySelf = false;
         }
 
-        base.SetCurrentHitboxValuesAsDefault(consumableCollider);
-        base.AdjustColliderHitbox(consumableCollider);
+        SetCurrentHitboxValuesAsDefault(m_consumableCollider);
+        AdjustColliderHitbox(m_consumableCollider);
     }
 
-    private new void Update()
+    private void Update()
     {
-        base.Update();
-
-        if (isThrown_ && hitTransform_)
+        if (m_isThrown_ && m_hitTransform_)
         {
-            isThrown_ = false;
+            m_isThrown_ = false;
 
-            if (audioSource && audioSource.clip &&
-                !hasStartedMusicOnce)
+            if (m_audioSource && m_audioSource.clip &&
+                !m_hasStartedMusicOnce)
             {
-                audioSource.Play();
-                hasStartedMusicOnce = true;
+                m_audioSource.Play();
+                m_hasStartedMusicOnce = true;
             }
 
-            Zombie zombie = hitTransform_.GetComponent<Zombie>();
+            Zombie zombie = m_hitTransform_.GetComponent<Zombie>();
 
             if (zombie)
             {
-                switch (type)
+                switch (m_type)
                 {
                     case ConsumableType.CHEESE_SAUCE:
                         {
@@ -78,18 +76,20 @@ public class Consumable : Holdable
                         }
                         break;
                 }
+
+                m_canDestroySelf = true;
             }
         }
 
-        if (hasStartedMusicOnce && type == ConsumableType.MEXICAN_SAUCE)
+        if (m_hasStartedMusicOnce && m_type == ConsumableType.MEXICAN_SAUCE)
         {
-            if (!audioSource.isPlaying)
+            if (!m_audioSource.isPlaying)
             {
-                canDestroySelf = true;
+                m_canDestroySelf = true;
             }
         }
 
-        if (canDestroySelf)
+        if (m_canDestroySelf)
         {
             Destroy(gameObject);
         }

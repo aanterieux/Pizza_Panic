@@ -1,46 +1,46 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : PlayerComponent
 {
     [Header("- Movement -")]
-    [SerializeField] private float baseMoveSpeed = 4f;
-    [SerializeField] private float runSpeedMultiplier = 1.75f;
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float deceleration = 5f;
-    [SerializeField] private bool toggleToRun = true;
+    [SerializeField] private float m_baseMoveSpeed = 4f;
+    [SerializeField] private float m_runSpeedMultiplier = 1.75f;
+    [SerializeField] private float m_jumpForce = 5f;
+    [SerializeField] private float m_deceleration = 5f;
+    [SerializeField] private bool m_toggleToRun = true;
 
     [Header("- Rotation -")]
-    [SerializeField] private float rotationSpeed = 4f;
-    [SerializeField] private bool invertHAxis = false;
+    [SerializeField] private float m_rotationSpeed = 4f;
+    [SerializeField] private bool m_invertHAxis = false;
 
     [Header("- Ground detection -")]
-    [SerializeField] private float maxSlopeAngle = 30f;
-    [SerializeField] private float groundCheckRadius = 0.3f;
-    [SerializeField] private float groundCheckDistance = 0.15f;
-    [SerializeField] private LayerMask notJumpableLayer = 3;
+    [SerializeField] private float m_maxSlopeAngle = 30f;
+    [SerializeField] private float m_groundCheckRadius = 0.3f;
+    [SerializeField] private float m_groundCheckDistance = 0.15f;
+    [SerializeField] private LayerMask m_notJumpableLayer = 3;
 
-    private Rigidbody rb = null;
-    private CapsuleCollider capsule = null;
-    private Ray groundRay = new Ray();
-    private Vector3 movement = Vector3.zero;
-    private bool jumpTrigger = false;
-    private bool isAirborne = false;
-    private bool isRunning = false;
+    private Rigidbody m_rb = null;
+    private CapsuleCollider m_capsule = null;
+    private Ray m_groundRay = new Ray();
+    private Vector3 m_movement = Vector3.zero;
+    private bool m_jumpTrigger = false;
+    private bool m_isAirborne = false;
+    private bool m_isRunning = false;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        capsule = GetComponent<CapsuleCollider>();
+        m_rb = GetComponent<Rigidbody>();
+        m_capsule = GetComponent<CapsuleCollider>();
 
-        groundRay.direction = Vector3.down;
+        m_groundRay.direction = Vector3.down;
     }
 
     private void FixedUpdate()
     {
         CheckGrounding();
 
-        if (jumpTrigger && !isAirborne)
+        if (m_jumpTrigger && !m_isAirborne)
         {
             Jump();
         }
@@ -56,100 +56,102 @@ public class PlayerController : MonoBehaviour
 
     private void Rotate()
     {
-        if (!InputManager.MouseConnected)
+        if (!InputManager.s_MouseConnected)
         {
             Debug.LogWarning("Cannot rotate: 'mouse' is null.");
             return;
         }
 
-        Vector2 rotationAxis = InputManager.MouseDelta;
-        float horizontal = rotationAxis.x * ((invertHAxis) ? -1f : 1f);
+        Vector2 rotationAxis = InputManager.s_MouseDelta;
+        float horizontal = rotationAxis.x * ((m_invertHAxis) ? -1f : 1f);
 
         rotationAxis.x = 0f;
         rotationAxis.y = horizontal;
 
-        transform.Rotate(Time.deltaTime * rotationSpeed * rotationAxis);
+        transform.Rotate(Time.deltaTime * m_rotationSpeed * rotationAxis);
     }
 
     private void Move()
     {
+        bool isMovingOnXAxis = !Mathf.Approximately(m_movement.x, 0f);
+        bool isMovingOnZAxis = !Mathf.Approximately(m_movement.z, 0f);
+        bool isMovingHorizontally = (isMovingOnXAxis || isMovingOnZAxis);
+
         // When not moving
-        if (Mathf.Approximately(movement.x, 0f) &&
-            Mathf.Approximately(movement.z, 0f))
+        if (!isMovingHorizontally)
         {
+            m_isRunning = false;
             Decelerate();
             return;
         }
 
         // When moving
         // Avoid moving faster diagonally
-
-        if (!Mathf.Approximately(movement.x, 0f) &&
-            !Mathf.Approximately(movement.z, 0f))
+        if (isMovingOnXAxis && isMovingOnZAxis)
         {
-            movement = Vector3.ClampMagnitude(movement, 1f);
+            m_movement = Vector3.ClampMagnitude(m_movement, 1f);
         }
 
         float moveSpeed =
-            baseMoveSpeed *
-                ((isRunning)
-                    ? runSpeedMultiplier
+            m_baseMoveSpeed *
+                ((m_isRunning)
+                    ? m_runSpeedMultiplier
                     : 1f);
         // Convert move direction from local space to
         // global space for accurate Rigidbody movement
         Vector3 movementDirection =
-            moveSpeed * transform.TransformDirection(movement);
-        Vector3 velocity = rb.linearVelocity;
+            moveSpeed * transform.TransformDirection(m_movement);
+        Vector3 velocity = m_rb.linearVelocity;
         velocity.x = movementDirection.x;
         velocity.z = movementDirection.z;
 
-        rb.linearVelocity = velocity;
+        m_rb.linearVelocity = velocity;
     }
 
     private void Decelerate()
     {
         // Apply horizontal drag
-        Vector3 linearVel = rb.linearVelocity;
-        rb.AddForce(
+        Vector3 linearVel = m_rb.linearVelocity;
+        m_rb.AddForce(
             new Vector3(
-                -(linearVel.x * deceleration),
+                -(linearVel.x * m_deceleration),
                 0f,
-                -(linearVel.z * deceleration)
+                -(linearVel.z * m_deceleration)
             )
         );
     }
 
     private void CheckGrounding()
     {
-        Vector3 center = transform.TransformPoint(capsule.center);
-        float halfHeight = capsule.height * 0.5f;
-        float bottomOffset = Mathf.Max(halfHeight - capsule.radius, 0f);
+        Vector3 center = transform.TransformPoint(m_capsule.center);
+        float halfHeight = m_capsule.height * 0.5f;
+        float bottomOffset = Mathf.Max(halfHeight - m_capsule.radius, 0f);
         Vector3 bottom = center + Vector3.down * bottomOffset;
 
         bool isGrounded = Physics.SphereCast(
             bottom + Vector3.up * 0.05f,
-            groundCheckRadius,
+            m_groundCheckRadius,
             Vector3.down,
             out RaycastHit hit,
-            groundCheckDistance,
-            ~notJumpableLayer,
+            m_groundCheckDistance,
+            ~m_notJumpableLayer,
             QueryTriggerInteraction.Ignore
         );
 
         if (!isGrounded)
         {
-            isAirborne = true;
+            m_isAirborne = true;
             return;
         }
 
-        isAirborne = IsTooSteep(hit.normal, maxSlopeAngle);
+        m_isAirborne = IsTooSteep(hit.normal, m_maxSlopeAngle);
     }
 
     private void Jump()
     {
-        Vector3 velocity = rb.linearVelocity;
-        velocity.y = jumpForce;
-        rb.linearVelocity = velocity;
+        Vector3 velocity = m_rb.linearVelocity;
+        velocity.y = m_jumpForce;
+        m_rb.linearVelocity = velocity;
     }
 
     private bool IsTooSteep(in Vector3 _groundNormal, in float _referenceAngle)
@@ -175,36 +177,36 @@ public class PlayerController : MonoBehaviour
 
     public void OnMoveX(InputAction.CallbackContext _context)
     {
-        OnMove_Template(_context, ref movement.x);
+        OnMove_Template(_context, ref m_movement.x);
     }
     public void OnMoveZ(InputAction.CallbackContext _context)
     {
-        OnMove_Template(_context, ref movement.z);
+        OnMove_Template(_context, ref m_movement.z);
     }
 
     public void OnJump(InputAction.CallbackContext _context)
     {
-        if (!rb)
+        if (!m_rb)
         {
             Debug.LogWarning("Cannot jump: 'rb' is null.");
             return;
         }
 
-        jumpTrigger = (_context.performed);
+        m_jumpTrigger = (_context.performed);
     }
 
     public void OnRun(InputAction.CallbackContext _context)
     {
-        if (toggleToRun)
+        if (m_toggleToRun)
         {
             if (_context.started)
             {
-                isRunning = !isRunning;
+                m_isRunning = !m_isRunning;
             }
 
             return;
         }
 
-        isRunning = (_context.performed);
+        m_isRunning = (_context.performed);
     }
 }
