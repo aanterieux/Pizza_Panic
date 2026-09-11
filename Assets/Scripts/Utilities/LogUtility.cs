@@ -11,7 +11,7 @@ public static class LogUtility
 
     private static string GetColouredText(in string _text, in string _colour)
     {
-        return $"<color={_colour}>{_text}.</color>";
+        return $"<color={_colour}>{_text}</color>";
     }
 
     public static void LogInfo(in string _text)

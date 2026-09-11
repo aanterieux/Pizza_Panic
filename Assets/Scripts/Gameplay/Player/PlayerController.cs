@@ -18,7 +18,7 @@ public class PlayerController : PlayerComponent
     [SerializeField] private float m_maxSlopeAngle = 30f;
     [SerializeField] private float m_groundCheckRadius = 0.3f;
     [SerializeField] private float m_groundCheckDistance = 0.15f;
-    [SerializeField] private LayerMask m_notJumpableLayer = 3;
+    [SerializeField] private LayerMask m_notJumpableLayers;
 
     private Rigidbody m_rb = null;
     private CapsuleCollider m_capsule = null;
@@ -43,6 +43,7 @@ public class PlayerController : PlayerComponent
         if (m_jumpTrigger && !m_isAirborne)
         {
             Jump();
+            m_jumpTrigger = false;
         }
 
         Move();
@@ -134,7 +135,7 @@ public class PlayerController : PlayerComponent
             Vector3.down,
             out RaycastHit hit,
             m_groundCheckDistance,
-            ~m_notJumpableLayer,
+            ~m_notJumpableLayers,
             QueryTriggerInteraction.Ignore
         );
 
