@@ -132,11 +132,13 @@ MonoBehaviour:
   m_maxHealth: 25
   m_attackCooldown: 0.8
   m_damage: 15
+  m_hurtColour: {r: 0.9, g: 0.8, b: 0.8, a: 1}
   m_state: 1
   m_destinationUpdatesPerSecond: 16
   m_burySpeed: 5
   m_distanceToAttack: 1.5
   m_distanceToChase: 0.75
+  m_feedbackSpeed: 1.75
 --- !u!195 &4158627323520214103
 NavMeshAgent:
   m_ObjectHideFlags: 0

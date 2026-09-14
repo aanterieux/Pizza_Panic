@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.125, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 0.3124999, y: 0.3125, z: 0.3124999}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -130,12 +130,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Gun
   m_hitboxFactor: 1.25
   m_distanceWithHolder: 1.5
-  m_ammoText: {fileID: 0}
-  m_shotsPerSecond: 4
-  m_damagePerShot: 5
-  m_magazineCapacity: 10
-  m_startingMagazineCount: 3
+  m_shotsPerSecond: 5
+  m_damagePerShot: 6
+  m_magazineCapacity: 15
+  m_startMagazineCount: 4
   m_reloadDuration: 1.5
+  m_gunUI: {fileID: 7687590540186493672, guid: d44c237498261a448927dee6d7961d77, type: 3}
+  m_particlePrefab: {fileID: 985160407705110243, guid: 28509bc1b19993e4d94d373cbe4d707b, type: 3}
 --- !u!54 &1751830802885411749
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -158,8 +159,8 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0

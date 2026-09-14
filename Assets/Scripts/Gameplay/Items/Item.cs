@@ -95,7 +95,7 @@ public class Item : MonoBehaviour
     {
         if (!_collider)
         {
-            LogUtility.LogWarning("Cannot adjust item hitbox: collider is null");
+            LogUtils.LogWarning("Cannot adjust item hitbox: collider is null");
             return;
         }
 
@@ -134,7 +134,7 @@ public class Item : MonoBehaviour
 
         if (isHolderNull)
         {
-            LogUtility.LogWarning("Cannot pickup item: _holderTransform is null");
+            LogUtils.LogWarning("Cannot pickup item: _holderTransform is null");
             return;
         }
 
@@ -142,14 +142,14 @@ public class Item : MonoBehaviour
 
         if (isSameHolder)
         {
-            LogUtility.LogWarning("Cannot pickup item: _holderTransform hasn't changed");
+            LogUtils.LogWarning("Cannot pickup item: _holderTransform hasn't changed");
             return;
         }
 
         m_holderTransform_ = _holderTransform;
 
-        m_rb.isKinematic = true;
-        m_rb.useGravity = false;
+        m_Rb_.isKinematic = true;
+        m_Rb_.useGravity = false;
 
         transform.SetParent(
             m_holderTransform_
@@ -160,8 +160,8 @@ public class Item : MonoBehaviour
     }
     public void OnRelease()
     {
-        m_rb.isKinematic = false;
-        m_rb.useGravity = true;
+        m_Rb_.isKinematic = false;
+        m_Rb_.useGravity = true;
 
         transform.SetParent(null);
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public static class LogUtility
+public static class LogUtils
 {
     private const string INFO_COLOUR = "cyan";
     private const string WARNING_COLOUR = "yellow";

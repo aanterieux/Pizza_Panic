@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 8729564242316234040}
   - component: {fileID: 7095469421230724018}
   - component: {fileID: 8695995404297307847}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -318,10 +318,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatManager
   m_health: 100
   m_maxHealth: 100
-  m_regenerationTriggerDelay: 2
+  m_regenerationDelay: 2
   m_regenerationsPerSec: 12
   m_healthPerStep: 2
-  m_rangedAttackReach: 15
+  m_rangedAttackReach: 20
   m_meleeAttackReach: 1
   m_meleeAttackCooldown: 0.5
   m_meleeAttackDamage: 2
@@ -347,12 +347,14 @@ MonoBehaviour:
   m_toggleToRun: 1
   m_rotationSpeed: 4
   m_invertHAxis: 0
-  m_maxSlopeAngle: 30
+  m_maxSlopeAngle: 60
   m_groundCheckRadius: 0.3
   m_groundCheckDistance: 0.15
-  m_notJumpableLayer:
+  m_notJumpableLayers:
     serializedVersion: 2
     m_Bits: 8
+  m_jumpBufferTime: 0.15
+  m_coyoteTime: 0.15
 --- !u!114 &7095469421230724018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,7 +392,7 @@ GameObject:
   - component: {fileID: 4797032197626006069}
   - component: {fileID: 6665445622565862841}
   - component: {fileID: 6602751196786580440}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}

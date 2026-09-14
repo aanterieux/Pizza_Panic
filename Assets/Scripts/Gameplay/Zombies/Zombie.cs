@@ -31,17 +31,21 @@ public class Zombie : MonoBehaviour
     [SerializeField] private int m_damage = 15;
 
     [Header("- Misc -")]
+    [SerializeField] private Color m_hurtColour = Color.white;
     [SerializeField] private ZombieState m_state = ZombieState.CHASE;
     [SerializeField] private uint m_destinationUpdatesPerSecond = 16U;
     [SerializeField] private float m_burySpeed = 5f;
     [SerializeField] private float m_distanceToAttack = 0.5f;
     [SerializeField] private float m_distanceToChase = 0.75f;
+    [SerializeField] [Min(0f)]
+     private float m_feedbackSpeed = 1f;
 
     private const int EFFECT_COUNT = ((int)(ZombieEffect.COUNT)) - 2;
 
     private NavMeshAgent m_agent = null;
     private Transform m_playerTransform = null;
     private CapsuleCollider m_capsule = null;
+    private MeshRenderer m_meshRenderer = null;
     private ZombieSpawner m_origin = null;
     private float[] m_effectsStrength = new float[EFFECT_COUNT];
     private float[] m_effectsDuration = new float[EFFECT_COUNT];
@@ -50,6 +54,8 @@ public class Zombie : MonoBehaviour
     private float m_attackTimer = 0f;
     private float m_baseMoveSpeed = 0f;
     private float m_destinationUpdateTimer = 0f;
+    private float m_feedbackTimer = 0f;
+    private Color m_baseColour = Color.black;
 
     public bool m_IsAttacking
     {
@@ -61,6 +67,8 @@ public class Zombie : MonoBehaviour
     {
         m_agent = GetComponent<NavMeshAgent>();
         m_capsule = GetComponent<CapsuleCollider>();
+        m_meshRenderer = GetComponent<MeshRenderer>();
+        m_baseColour = m_meshRenderer.sharedMaterial.color;
 
         VaryStatsAndSize();
 
@@ -86,6 +94,18 @@ public class Zombie : MonoBehaviour
     {
         ManageStates();
         ManageEffects();
+
+        if (m_feedbackTimer < 1f &&
+            m_state != ZombieState.DEAD)
+        {
+            m_feedbackTimer += m_feedbackSpeed * Time.deltaTime;
+            m_meshRenderer.material.color =
+                Color.Lerp(
+                    m_hurtColour,
+                    m_baseColour,
+                    m_feedbackTimer
+                );
+        }
     }
 
     private void OnValidate()
@@ -194,7 +214,7 @@ public class Zombie : MonoBehaviour
                         Gun gun = m_playerTransform
                             .GetComponent<PlayerInventory>()
                             .m_CurrentItem as Gun;
-                        gun.GiveAmmos(3);
+                        gun.GiveAmmos(Random.Range(10, 30 + 1));
 
                         Destroy(gameObject);
                     }
@@ -277,6 +297,12 @@ public class Zombie : MonoBehaviour
             );
     }
 
+    private void TriggerDamageFeedback()
+    {
+        m_meshRenderer.material.color = Color.white;
+        m_feedbackTimer = 0f;
+    }
+
 
     public void LinkToSpawner(ZombieSpawner _spawner)
     {
@@ -291,6 +317,8 @@ public class Zombie : MonoBehaviour
         }
 
         m_health -= _damage;
+
+        TriggerDamageFeedback();
 
         if (m_health <= 0)
         {

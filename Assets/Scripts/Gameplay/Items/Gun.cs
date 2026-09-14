@@ -4,19 +4,27 @@ using TMPro;
 public class Gun : Item
 {
     [Header("-- Gun --")]
-    [SerializeField] private TextMeshProUGUI m_ammoText = null;
+    [Header("- Gun Properties -")]
     [SerializeField] [Min(1)]
      private int m_shotsPerSecond = 4;
     [SerializeField] private int m_damagePerShot = 5;
     [SerializeField] [Min(0)]
      private int m_magazineCapacity = 10;
     [SerializeField] [Min(0)]
-     private int m_startingMagazineCount = 3;
+     private int m_startMagazineCount = 3;
     [SerializeField] [Min(0f)]
      private float m_reloadDuration = 1.5f;
 
+    [Header("- UI -")]
+    [SerializeField] private GameObject m_gunUI = null;
+
+    [Header("- Misc -")]
+    [SerializeField] private GameObject m_particlePrefab = null;
+
     private Collider m_collider = null;
     private Ray m_ray = new Ray();
+    private TextMeshProUGUI m_ammoText = null;
+    private ParticleSystem m_particleSys = null;
     private float m_shotCooldown = 0f;
     private float m_shotTimer = 0f;
     private float m_shotReach = 0f;
@@ -26,16 +34,37 @@ public class Gun : Item
     private bool m_isShooting = false;
     private bool m_isReloading = false;
     private bool m_isPickedUpCpy = false;
+    private bool m_reloadTextTrigger = true;
 
     private void Awake()
     {
-        m_Rb_.linearVelocity = Vector3.zero;
+        //m_Rb_.linearVelocity = Vector3.zero;
         m_collider = GetComponent<Collider>();
 
         m_currentMagazineAmmo = m_magazineCapacity;
         m_reserveAmmo =
-            Mathf.Max(0, (m_startingMagazineCount - 1) * m_magazineCapacity);
+            Mathf.Max(0, (m_startMagazineCount - 1) * m_magazineCapacity);
         m_shotCooldown = 1f / m_shotsPerSecond;
+
+        if (m_particlePrefab)
+        {
+            m_particleSys =
+                Instantiate(m_particlePrefab, transform)
+                .GetComponent<ParticleSystem>();
+        }
+    }
+
+    private void Start()
+    {
+        Canvas canvas = FindAnyObjectByType<Canvas>();
+
+        if (!canvas)
+        {
+            return;
+        }
+
+        GameObject uiObj = Instantiate(m_gunUI, canvas.transform);
+        m_ammoText = uiObj.GetComponentInChildren<TextMeshProUGUI>();
 
         TrySetAmmoTextVisibility(false);
     }
@@ -65,9 +94,16 @@ public class Gun : Item
         {
             m_reloadTimer += Time.deltaTime;
 
+            if (m_reloadTextTrigger && m_ammoText)
+            {
+                m_ammoText.text = $"Reloading.../{m_reserveAmmo}";
+                m_reloadTextTrigger = false;
+            }
+
             if (m_reloadTimer >= m_reloadDuration)
             {
                 Reload();
+                m_reloadTextTrigger = true;
             }
 
             return;
@@ -104,6 +140,11 @@ public class Gun : Item
         m_currentMagazineAmmo--;
 
         TryAdaptAmmoText();
+
+        if (m_particleSys)
+        {
+            m_particleSys.Play();
+        }
 
         if (!Physics.Raycast(
             m_ray,

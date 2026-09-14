@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
 
         if (SceneManager.GetActiveScene().name != "MainMenu")
         {
+            WarpCursorToScreenCenter();
             HideAndLockCursor();
         }
 
@@ -71,7 +72,7 @@ public class GameManager : MonoBehaviour
     {
         if (!InputManager.s_MouseConnected)
         {
-            LogUtility.LogWarning($"Could not {_action} cursor: no mouse connected");
+            LogUtils.LogWarning($"Could not {_action} cursor: no mouse connected");
             return false;
         }
 

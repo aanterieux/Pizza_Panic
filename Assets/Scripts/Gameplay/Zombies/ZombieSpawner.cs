@@ -17,6 +17,7 @@ public class ZombieSpawner : MonoBehaviour
     private void Awake()
     {
         m_self = GetComponent<ZombieSpawner>();
+        m_spawnTimer += Random.Range(-1.5f, 0.5f);
     }
 
     private void Start()
