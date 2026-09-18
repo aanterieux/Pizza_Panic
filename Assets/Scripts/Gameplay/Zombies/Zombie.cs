@@ -214,7 +214,7 @@ public class Zombie : MonoBehaviour
                         Gun gun = m_playerTransform
                             .GetComponent<PlayerInventory>()
                             .m_CurrentItem as Gun;
-                        gun.GiveAmmos(Random.Range(10, 30 + 1));
+                        gun.GiveAmmos(Random.Range(2, 12 + 1));
 
                         Destroy(gameObject);
                     }

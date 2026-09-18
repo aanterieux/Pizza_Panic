@@ -6,34 +6,34 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject m_gameOverUI = null;
     [SerializeField] [Min(0f)]
      private float m_timeScale = 1f;
+    [SerializeField] private bool m_dontDestroyOnLoad = true;
 
     private Transform m_canvasTransform = null;
     private PlayerStatManager m_playerStatManager = null;
     private float m_timeScaleCpy = 1f;
     private bool m_isGameOver = false;
     private bool m_canTriggerGameOver = false;
+    private bool m_hasSceneChanged = false;
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
-
-        if (SceneManager.GetActiveScene().name != "MainMenu")
+        if (m_dontDestroyOnLoad)
         {
-            WarpCursorToScreenCenter();
-            HideAndLockCursor();
+            DontDestroyOnLoad(gameObject);
         }
 
-        UpdateTimeScale();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    private void Start()
-    {
-        m_canvasTransform = FindAnyObjectByType<Canvas>().transform;
-        m_playerStatManager = FindAnyObjectByType<PlayerStatManager>();
-    }
 
     private void Update()
     {
+        if (m_hasSceneChanged)
+        {
+            RefreshSceneReferences();
+            m_hasSceneChanged = false;
+        }
+
         if (m_isGameOver)
         {
             if (m_canTriggerGameOver)
@@ -45,16 +45,17 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (m_playerStatManager.m_Health <= 0)
-        {
-            m_isGameOver = true;
-            m_canTriggerGameOver = true;
-        }
-
         if (m_timeScaleCpy != m_timeScale)
         {
             UpdateTimeScale();
             m_timeScaleCpy = m_timeScale;
+        }
+
+        if (m_playerStatManager &&
+            m_playerStatManager.m_Health <= 0)
+        {
+            m_isGameOver = true;
+            m_canTriggerGameOver = true;
         }
     }
 
@@ -67,6 +68,39 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+
+    private void OnSceneLoaded(Scene _scene, LoadSceneMode _loadSceneMode)
+    {
+        if (_scene.name != "MainMenu")
+        {
+            WarpCursorToScreenCenter();
+            HideAndLockCursor();
+        }
+
+        UpdateTimeScale();
+
+        m_hasSceneChanged = true;
+
+        m_isGameOver = false;
+    }
+
+    private void RefreshSceneReferences()
+    {
+        Canvas canvas = FindAnyObjectByType<Canvas>();
+
+        m_canvasTransform =
+            (canvas)
+                ? canvas.transform
+                : null;
+
+        m_playerStatManager = FindAnyObjectByType<PlayerStatManager>();
+
+    }
 
     private bool CheckMouseValidity(in string _action)
     {

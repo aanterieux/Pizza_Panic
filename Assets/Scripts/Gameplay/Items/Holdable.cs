@@ -29,7 +29,7 @@ public class Holdable : Item
     {
         base.OnValidate();
 
-        if (m_HitboxAdjustmentTrigger_)
+        if (HitboxAdjustmentTrigger_)
         {
             if (!m_holdableCollider)
             {
@@ -44,7 +44,7 @@ public class Holdable : Item
     {
         Transform collisionTransform = _collision.transform;
 
-        if (m_IsPickedUp || collisionTransform.GetComponent<Item>())
+        if (IsPickedUp || collisionTransform.GetComponent<Item>())
         {
             return;
         }
@@ -74,8 +74,8 @@ public class Holdable : Item
 
     private void ResetRigidbodyVelocity()
     {
-        m_Rb_.linearVelocity = Vector3.zero;
-        m_Rb_.angularVelocity = Vector3.zero;
+        Rb_.linearVelocity = Vector3.zero;
+        Rb_.angularVelocity = Vector3.zero;
     }
 
 
@@ -98,7 +98,7 @@ public class Holdable : Item
 
         OnRelease();
 
-        m_Rb_.AddForce(
+        Rb_.AddForce(
             _throwForce * throwDirection
             + 0.33f * _throwForce * Vector3.up,
             ForceMode.VelocityChange

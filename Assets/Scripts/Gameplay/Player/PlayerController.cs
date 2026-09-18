@@ -93,14 +93,9 @@ public class PlayerController : PlayerComponent
 
     private void Move()
     {
-        bool movingX =
-            !Mathf.Approximately(m_movement.x, 0f);
-
-        bool movingZ =
-            !Mathf.Approximately(m_movement.z, 0f);
-
         bool moving =
-            movingX || movingZ;
+            !Mathf.Approximately(m_movement.x, 0f) ||
+            !Mathf.Approximately(m_movement.z, 0f);
 
         if (!moving)
         {
@@ -109,22 +104,15 @@ public class PlayerController : PlayerComponent
             return;
         }
 
-        m_movement =
-            Vector3.ClampMagnitude(
-                m_movement,
-                1f
-            );
+        Vector3 movementInput =
+            Vector3.ClampMagnitude(m_movement, 1f);
 
         float moveSpeed =
             m_baseMoveSpeed *
-            (m_isRunning
-                ? m_runSpeedMultiplier
-                : 1f);
+            (m_isRunning ? m_runSpeedMultiplier : 1f);
 
         Vector3 movementDirection =
-            transform.TransformDirection(
-                m_movement
-            ) * moveSpeed;
+            transform.TransformDirection(movementInput) * moveSpeed;
 
         Vector3 velocity = m_rb.linearVelocity;
 

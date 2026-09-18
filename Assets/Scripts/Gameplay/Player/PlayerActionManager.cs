@@ -58,7 +58,7 @@ public class PlayerActionManager : PlayerComponent
     private void TryPickupItem(Item _item)
     {
         if (_item == null ||
-            _item.m_IsPickedUp ||
+            _item.IsPickedUp ||
             m_inventory.m_CurrentItem == _item)
         {
             return;
@@ -179,7 +179,7 @@ public class PlayerActionManager : PlayerComponent
                 {
                     Holdable holdable = (currentItem as Holdable);
 
-                    if (_context.started && holdable.m_IsPickedUp)
+                    if (_context.started && holdable.IsPickedUp)
                     {
                         ThrowItem(holdable, m_statManager.m_ThrowForce);
                     }
@@ -227,7 +227,7 @@ public class PlayerActionManager : PlayerComponent
             return;
         }
 
-        if (!item.m_IsPickedUp)
+        if (!item.IsPickedUp)
         {
             TryPickupItem(item);
             return;

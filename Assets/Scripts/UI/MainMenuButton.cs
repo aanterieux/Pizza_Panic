@@ -1,15 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MainMenuButton : MonoBehaviour
+public class MainMenuButton : UIButton<MainMenuButton.ButtonType>
 {
-    private enum ButtonType
+    public enum ButtonType
     {
         PLAY,
         QUIT
     }
-
-    [SerializeField] private ButtonType m_buttonType = ButtonType.PLAY;
 
     private void StartGame()
     {
@@ -22,9 +20,9 @@ public class MainMenuButton : MonoBehaviour
     }
 
 
-    public void OnClick()
+    public override void OnClick()
     {
-        switch (m_buttonType)
+        switch (base.m_type)
         {
             case ButtonType.PLAY: StartGame(); break;
             case ButtonType.QUIT: QuitGame(); break;

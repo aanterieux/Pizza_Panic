@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(AudioSource))]
 public class Item : MonoBehaviour
 {
     [Header("-- Item --")]
@@ -10,6 +11,7 @@ public class Item : MonoBehaviour
      private float m_distanceWithHolder = 1.5f;
 
     private Rigidbody m_rb = null;
+    private AudioSource m_audioSource = null;
     private Vector3 m_baseSize = Vector3.one;
     private float m_baseRadius = 0.5f;
     private float m_baseHeight = 2f;
@@ -19,7 +21,7 @@ public class Item : MonoBehaviour
 
     protected Transform m_holderTransform_ = null;
     
-    protected Rigidbody m_Rb_
+    protected Rigidbody Rb_
     {
         get
         {
@@ -31,20 +33,37 @@ public class Item : MonoBehaviour
             return m_rb;
         }
     }
-    protected Transform m_HolderTransform_
+    protected AudioSource AudioPlayer_
+    {
+        get
+        {
+            if (!m_audioSource)
+            {
+                m_audioSource = GetComponent<AudioSource>();
+            }
+
+            return m_audioSource;
+        }
+    }
+    protected Transform HolderTransform_
     {
         get => m_holderTransform_;
     }
-    protected bool m_HitboxAdjustmentTrigger_
+    protected bool HitboxAdjustmentTrigger_
     {
         get => m_hitboxAdjustmentTrigger;
     }
 
-    public bool m_IsPickedUp
+    public bool IsPickedUp
     {
         get => m_isPickedUp;
     }
 
+
+    private void Awake()
+    {
+        AudioPlayer_.playOnAwake = false;
+    }
 
     private void Start()
     {
@@ -148,8 +167,8 @@ public class Item : MonoBehaviour
 
         m_holderTransform_ = _holderTransform;
 
-        m_Rb_.isKinematic = true;
-        m_Rb_.useGravity = false;
+        Rb_.isKinematic = true;
+        Rb_.useGravity = false;
 
         transform.SetParent(
             m_holderTransform_
@@ -160,8 +179,8 @@ public class Item : MonoBehaviour
     }
     public void OnRelease()
     {
-        m_Rb_.isKinematic = false;
-        m_Rb_.useGravity = true;
+        Rb_.isKinematic = false;
+        Rb_.useGravity = true;
 
         transform.SetParent(null);
 

@@ -1,14 +1,10 @@
-using UnityEngine;
-
-public class GameOverButton : MonoBehaviour
+public class GameOverButton : UIButton<GameOverButton.ButtonType>
 {
-    private enum ButtonType
+    public enum ButtonType
     {
         RESTART,
         MENU
     }
-
-    [SerializeField] private ButtonType type = ButtonType.RESTART;
 
     private GameManager m_gameManager = null;
 
@@ -29,9 +25,9 @@ public class GameOverButton : MonoBehaviour
     }
 
 
-    public void OnClick()
+    public override void OnClick()
     {
-        switch (type)
+        switch (base.m_type)
         {
             case ButtonType.RESTART:
                 {

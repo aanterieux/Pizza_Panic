@@ -13,7 +13,6 @@ public class Consumable : Holdable
     [SerializeField] private AudioClip m_mexicanSauceMusic = null;
 
     private Collider m_consumableCollider = null;
-    private AudioSource m_audioSource = null;
     private bool m_hasStartedMusicOnce = false;
     private bool m_canDestroySelf = false;
 
@@ -26,8 +25,7 @@ public class Consumable : Holdable
 
         if (m_type == ConsumableType.MEXICAN_SAUCE)
         {
-            m_audioSource = gameObject.AddComponent<AudioSource>();
-            m_audioSource.clip = m_mexicanSauceMusic;
+            AudioPlayer_.clip = m_mexicanSauceMusic;
 
             m_canDestroySelf = false;
         }
@@ -42,10 +40,10 @@ public class Consumable : Holdable
         {
             m_isThrown_ = false;
 
-            if (m_audioSource && m_audioSource.clip &&
+            if (AudioPlayer_ && AudioPlayer_.clip &&
                 !m_hasStartedMusicOnce)
             {
-                m_audioSource.Play();
+                AudioPlayer_.Play();
                 m_hasStartedMusicOnce = true;
             }
 
@@ -83,7 +81,7 @@ public class Consumable : Holdable
 
         if (m_hasStartedMusicOnce && m_type == ConsumableType.MEXICAN_SAUCE)
         {
-            if (!m_audioSource.isPlaying)
+            if (!AudioPlayer_.isPlaying)
             {
                 m_canDestroySelf = true;
             }

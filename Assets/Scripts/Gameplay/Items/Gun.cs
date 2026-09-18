@@ -18,8 +18,14 @@ public class Gun : Item
     [Header("- UI -")]
     [SerializeField] private GameObject m_gunUI = null;
 
-    [Header("- Misc -")]
+    [Header("- Feedbacks -")]
     [SerializeField] private GameObject m_particlePrefab = null;
+    [SerializeField] private AudioClip m_shootSound = null;
+    [SerializeField] private AudioClip m_reloadStartSound = null;
+    [SerializeField] private AudioClip m_reloadEndSound = null;
+    [SerializeField] private AudioClip m_noAmmoSound = null;
+    [SerializeField] [Range(0f, 1f)]
+     private float m_pitchVariation = 0.25f;
 
     private Collider m_collider = null;
     private Ray m_ray = new Ray();
@@ -71,9 +77,9 @@ public class Gun : Item
 
     private void Update()
     {
-        if (m_isPickedUpCpy != m_IsPickedUp)
+        if (m_isPickedUpCpy != IsPickedUp)
         {
-            if (m_IsPickedUp)
+            if (IsPickedUp)
             {
                 OnEquip();
             }
@@ -82,10 +88,10 @@ public class Gun : Item
                 OnUnequip();
             }
 
-            m_isPickedUpCpy = m_IsPickedUp;
+            m_isPickedUpCpy = IsPickedUp;
         }
 
-        if (!m_IsPickedUp)
+        if (!IsPickedUp)
         {
             return;
         }
@@ -96,12 +102,15 @@ public class Gun : Item
 
             if (m_reloadTextTrigger && m_ammoText)
             {
+                AudioPlayer_.PlayOneShot(m_reloadStartSound);
+
                 m_ammoText.text = $"Reloading.../{m_reserveAmmo}";
                 m_reloadTextTrigger = false;
             }
 
             if (m_reloadTimer >= m_reloadDuration)
             {
+                AudioPlayer_.PlayOneShot(m_reloadEndSound);
                 Reload();
                 m_reloadTextTrigger = true;
             }
@@ -134,8 +143,15 @@ public class Gun : Item
 
     private void Shoot()
     {
-        m_ray.origin = m_HolderTransform_.position;
-        m_ray.direction = m_HolderTransform_.forward;
+        float pitchMin = 1f - m_pitchVariation;
+        float pitchMax = 1f + m_pitchVariation;
+
+        AudioPlayer_.pitch = Random.Range(pitchMin, pitchMax);
+        AudioPlayer_.PlayOneShot(m_shootSound);
+        AudioPlayer_.pitch = 1f;
+
+        m_ray.origin = HolderTransform_.position;
+        m_ray.direction = HolderTransform_.forward;
 
         m_currentMagazineAmmo--;
 
@@ -233,14 +249,14 @@ public class Gun : Item
 
     public void OnEquip()
     {
-        if (!m_HolderTransform_)
+        if (!HolderTransform_)
         {
             return;
         }
 
-        m_Rb_.isKinematic = true;
+        Rb_.isKinematic = true;
 
-        transform.SetParent(m_HolderTransform_);
+        transform.SetParent(HolderTransform_);
         transform.localPosition =
             new Vector3(0.33f, -0.4f, 0.6f);
         transform.localRotation =
@@ -253,7 +269,7 @@ public class Gun : Item
     }
     public void OnUnequip()
     {
-        m_Rb_.isKinematic = false;
+        Rb_.isKinematic = false;
         m_isShooting = false;
 
         TrySetAmmoTextVisibility(false);
