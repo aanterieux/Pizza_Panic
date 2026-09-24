@@ -132,13 +132,16 @@ MonoBehaviour:
   m_maxHealth: 25
   m_attackCooldown: 0.8
   m_damage: 15
+  m_attackSound: {fileID: 8300000, guid: 6687e4a44676f464ab006e6e4f918018, type: 3}
+  m_hurtSound: {fileID: 8300000, guid: 5c0a9c5266bc95b4db4dfb97f5ee23c1, type: 3}
+  m_deathSound: {fileID: 8300000, guid: 396d29add67856242964bae85c2774e1, type: 3}
   m_hurtColour: {r: 0.9, g: 0.8, b: 0.8, a: 1}
+  m_visualFeedbackSpeed: 1
   m_state: 1
   m_destinationUpdatesPerSecond: 16
   m_burySpeed: 5
   m_distanceToAttack: 1.5
   m_distanceToChase: 0.75
-  m_feedbackSpeed: 1.75
 --- !u!195 &4158627323520214103
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -18,8 +18,14 @@ public class FPSViewer : MonoBehaviour
             float averageFPS = m_frameCount / m_totalFrameTime;
             string logText = $"Average FPS: {averageFPS:F2}";
 
-            //Debug.Log(logText);
-            m_tmpText.text = logText;
+            if (m_tmpText)
+            {
+                m_tmpText.text = logText;
+            }
+            else
+            {
+                Debug.Log(logText);
+            }
 
             m_frameCount = 0;
             m_totalFrameTime = 0f;

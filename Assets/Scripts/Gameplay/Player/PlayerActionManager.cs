@@ -66,6 +66,14 @@ public class PlayerActionManager : PlayerComponent
 
         m_inventory.SetCurrentItem(_item);
         _item.OnPickup(m_CamTransform_);
+
+        if (_item is Gun)
+        {
+            AudioController_.PlayGunEquipSound();
+            return;
+        }
+
+        AudioController_.PlayItemPickupSound();
     }
     private void DropItem(Item _item)
     {
@@ -93,6 +101,7 @@ public class PlayerActionManager : PlayerComponent
 
         _throwableItem.OnThrow(_throwForce);
         m_inventory.ClearCurrentItem();
+        AudioController_.PlayItemThrowSound();
     }
 
     private void UpdateRayOriginAndDirection()

@@ -10,7 +10,6 @@ public class ZombieSpawner : MonoBehaviour
     [SerializeField] private bool m_isActive = true;
 
     private ZombieSpawner m_self = null;
-    private ZombieManager m_manager = null;
     private float m_spawnTimer = 0f;
     private int m_zombieSpawnedCount = 0;
 
@@ -20,19 +19,9 @@ public class ZombieSpawner : MonoBehaviour
         m_spawnTimer += Random.Range(-1.5f, 0.5f);
     }
 
-    private void Start()
-    {
-        m_manager = FindAnyObjectByType<ZombieManager>();
-
-        if (!m_manager)
-        {
-            m_manager = Instantiate(new ZombieManager());
-        }
-    }
-
     private void Update()
     {
-        if (!m_manager.m_IsSpawnAllowed)
+        if (!ZombieManager.s_Instance.m_IsSpawnAllowed)
         {
             return;
         }
@@ -83,13 +72,13 @@ public class ZombieSpawner : MonoBehaviour
             newZombie.LinkToSpawner(m_self);
 
             m_zombieSpawnedCount++;
-            m_manager.IncrementZombieCount();
+            ZombieManager.s_Instance.IncrementZombieCount();
         }
     }
 
     public void NotifyZombieDeath()
     {
         m_zombieSpawnedCount--;
-        m_manager.DecrementZombieCount();
+        ZombieManager.s_Instance.DecrementZombieCount();
     }
 }

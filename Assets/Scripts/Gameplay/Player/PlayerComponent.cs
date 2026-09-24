@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerComponent : MonoBehaviour
 {
     private Transform m_camTransform = null;
+    private PlayerAudioController m_audioController = null;
 
     protected Transform m_CamTransform_
     {
@@ -16,6 +17,18 @@ public class PlayerComponent : MonoBehaviour
             }
 
             return m_camTransform;
+        }
+    }
+    protected PlayerAudioController AudioController_
+    {
+        get
+        {
+            if (!m_audioController)
+            {
+                m_audioController = GetComponent<PlayerAudioController>();
+            }
+
+            return m_audioController;
         }
     }
 }

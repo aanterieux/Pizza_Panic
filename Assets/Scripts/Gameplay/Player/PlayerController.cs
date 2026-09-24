@@ -27,10 +27,28 @@ public class PlayerController : PlayerComponent
     private Rigidbody m_rb = null;
     private CapsuleCollider m_capsule = null;
     private Vector3 m_movement = Vector3.zero;
+    private float m_finalMoveSpeed = 0f;
     private float m_coyoteTimer = 0f;
     private float m_jumpBufferTimer = 0f;
+    private float m_footstepSoundTimer = 0f;
+    private float m_yaw = 0f;
     private bool m_isGrounded = false;
     private bool m_isRunning = false;
+
+    public float MoveSpeed
+    {
+        get => m_finalMoveSpeed;
+    }
+    public bool IsMoving
+    {
+        get =>
+            (!Mathf.Approximately(m_movement.x, 0f) ||
+             !Mathf.Approximately(m_movement.z, 0f));
+    }
+    public bool IsRunning
+    {
+        get => m_isRunning;
+    }
 
     private void Awake()
     {
@@ -38,81 +56,77 @@ public class PlayerController : PlayerComponent
         m_capsule = GetComponent<CapsuleCollider>();
     }
 
+    private void FixedUpdate()
+    {
+        CheckGrounding();
+        CheckCoyoteTime();
+
+        if (m_jumpBufferTimer > 0f && m_coyoteTimer > 0f)
+        {
+            Jump();
+            AudioController_.PlayJumpSound();
+            m_isGrounded = false;
+
+            m_coyoteTimer = 0f;
+            m_jumpBufferTimer = 0f;
+        }
+
+        Quaternion rbRotation = Quaternion.Euler(0f, m_yaw, 0f);
+
+        m_rb.MoveRotation(rbRotation);
+
+        HandleMovement();
+    }
+
     private void Update()
     {
         Rotate();
 
-        // Countdown jump buffer in real time.
         if (m_jumpBufferTimer > 0f)
-            m_jumpBufferTimer -= Time.deltaTime;
-    }
-
-    private void FixedUpdate()
-    {
-        CheckGrounding();
-
-        // Coyote time.
-        if (m_isGrounded)
-            m_coyoteTimer = m_coyoteTime;
-        else
-            m_coyoteTimer -= Time.fixedDeltaTime;
-
-        // Consume buffered jump.
-        if (m_jumpBufferTimer > 0f && m_coyoteTimer > 0f)
         {
-            Jump();
-
-            m_jumpBufferTimer = 0f;
-            m_coyoteTimer = 0f;
-            m_isGrounded = false;
+            m_jumpBufferTimer -= Time.deltaTime;
         }
-
-        Move();
     }
+
 
     private void Rotate()
     {
-        if (!InputManager.s_MouseConnected)
+        if (!InputManager.s_Instance.MouseConnected)
+        {
             return;
+        }
 
-        Vector2 rotationAxis = InputManager.s_MouseDelta;
-
+        Vector2 rotationAxis = InputManager.s_Instance.MouseDelta;
         float horizontal =
             rotationAxis.x *
             (m_invertHAxis ? -1f : 1f);
 
-        rotationAxis.x = 0f;
-        rotationAxis.y = horizontal;
-
-        transform.Rotate(
-            Time.deltaTime *
-            m_rotationSpeed *
-            rotationAxis
-        );
+        m_yaw += horizontal * m_rotationSpeed * Time.deltaTime;
     }
 
-    private void Move()
+    private void HandleMovement()
     {
-        bool moving =
-            !Mathf.Approximately(m_movement.x, 0f) ||
-            !Mathf.Approximately(m_movement.z, 0f);
-
-        if (!moving)
+        if (!IsMoving)
         {
             m_isRunning = false;
             Decelerate();
             return;
         }
 
+        Move();
+        HandleMoveSound();
+    }
+    private void Move()
+    {
         Vector3 movementInput =
             Vector3.ClampMagnitude(m_movement, 1f);
 
-        float moveSpeed =
+        m_finalMoveSpeed =
             m_baseMoveSpeed *
             (m_isRunning ? m_runSpeedMultiplier : 1f);
 
         Vector3 movementDirection =
-            transform.TransformDirection(movementInput) * moveSpeed;
+            transform.TransformDirection(movementInput) * m_finalMoveSpeed;
 
         Vector3 velocity = m_rb.linearVelocity;
 
@@ -120,6 +134,24 @@ public class PlayerController : PlayerComponent
         velocity.z = movementDirection.z;
 
         m_rb.linearVelocity = velocity;
+    }
+    private void HandleMoveSound()
+    {
+        float playInterval = 1f / (0.5f * m_finalMoveSpeed);
+
+        if (!m_isGrounded)
+        {
+            m_footstepSoundTimer = 0.5f * playInterval;
+            return;
+        }
+
+        m_footstepSoundTimer += Time.deltaTime;
+
+        if (m_footstepSoundTimer >= playInterval)
+        {
+            AudioController_.PlayFootstepSound();
+            m_footstepSoundTimer = 0f;
+        }
     }
 
     private void Decelerate()
@@ -183,17 +215,37 @@ public class PlayerController : PlayerComponent
                 QueryTriggerInteraction.Ignore
             );
 
-        if (!hitGround)
-        {
-            m_isGrounded = false;
-            return;
-        }
+        bool wasGrounded = m_isGrounded;
 
         m_isGrounded =
+            hitGround &&
             !IsTooSteep(
                 hit.normal,
                 m_maxSlopeAngle
             );
+
+        if (!m_isGrounded)
+        {
+            return;
+        }
+
+        //if (m_hasBeenAirborne &&
+        //    m_airborneTimer >= m_minAirborneTimeForLanding)
+        //{
+        //    AudioController_.PlayLandingSound();
+        //}
+    }
+
+    private void CheckCoyoteTime()
+    {
+        if (m_isGrounded)
+        {
+            m_coyoteTimer = m_coyoteTime;
+        }
+        else
+        {
+            m_coyoteTimer -= Time.fixedDeltaTime;
+        }
     }
 
     private void Jump()
@@ -231,8 +283,7 @@ public class PlayerController : PlayerComponent
             return;
         }
 
-        axis =
-            _context.ReadValue<float>();
+        axis = _context.ReadValue<float>();
     }
 
     public void OnMoveX(InputAction.CallbackContext _context)
@@ -242,7 +293,6 @@ public class PlayerController : PlayerComponent
             ref m_movement.x
         );
     }
-
     public void OnMoveZ(InputAction.CallbackContext _context)
     {
         OnMoveTemplate(
@@ -255,7 +305,7 @@ public class PlayerController : PlayerComponent
     {
         if (!m_rb)
         {
-            Debug.LogWarning(
+            LogUtils.LogWarning(
                 "Cannot jump: Rigidbody is null."
             );
             return;
@@ -263,9 +313,7 @@ public class PlayerController : PlayerComponent
 
         if (_context.performed)
         {
-            // Remember the input for a short time.
-            m_jumpBufferTimer =
-                m_jumpBufferTime;
+            m_jumpBufferTimer = m_jumpBufferTime;
         }
     }
 
@@ -274,12 +322,14 @@ public class PlayerController : PlayerComponent
         if (m_toggleToRun)
         {
             if (_context.started)
+            {
                 m_isRunning = !m_isRunning;
+            }
 
             return;
         }
 
         m_isRunning =
-            _context.performed;
+        _context.performed;
     }
 }

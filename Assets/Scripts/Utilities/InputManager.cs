@@ -3,44 +3,44 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 
-public class InputManager : MonoBehaviour
+public class InputManager : MySingleton<InputManager>
 {
-    public static Keyboard s_CurrentKeyboard
+    public Keyboard CurrentKeyboard
     {
         get => Keyboard.current;
     }
-    public static Mouse s_CurrentMouse
+    public Mouse CurrentMouse
     {
         get => Mouse.current;
     }
-    public static Gamepad s_CurrentGamepad
+    public Gamepad CurrentGamepad
     {
         get => Gamepad.current;
     }
 
-    public static StickControl s_GamepadStick_Left
+    public StickControl GamepadStick_Left
     {
-        get => s_CurrentGamepad.leftStick;
+        get => CurrentGamepad.leftStick;
     }
-    public static StickControl s_GamepadStick_Right
+    public StickControl GamepadStick_Right
     {
-        get => s_CurrentGamepad.rightStick;
-    }
-
-    public static Vector2 s_MouseDelta
-    {
-        get => s_CurrentMouse.delta.ReadValue();
-    }
-    public static Vector2 s_GamepadDelta_Left
-    {
-        get => s_GamepadStick_Left.ReadValue();
-    }
-    public static Vector2 s_GamepadDelta_Right
-    {
-        get => s_GamepadStick_Right.ReadValue();
+        get => CurrentGamepad.rightStick;
     }
 
-    public static int s_GameDeviceCount
+    public Vector2 MouseDelta
+    {
+        get => CurrentMouse.delta.ReadValue();
+    }
+    public Vector2 GamepadDelta_Left
+    {
+        get => GamepadStick_Left.ReadValue();
+    }
+    public Vector2 GamepadDelta_Right
+    {
+        get => GamepadStick_Right.ReadValue();
+    }
+
+    public int GameDeviceCount
     {
         get =>
             InputSystem.devices.Count(
@@ -51,54 +51,59 @@ public class InputManager : MonoBehaviour
             );
     }
 
-    public static bool s_KeyboardConnected
+    public bool KeyboardConnected
     {
-        get => (s_CurrentKeyboard != null);
+        get => (CurrentKeyboard != null);
     }
-    public static bool s_MouseConnected
+    public bool MouseConnected
     {
-        get => (s_CurrentMouse != null);
+        get => (CurrentMouse != null);
     }
-    public static bool s_GamepadConnected
+    public bool GamepadConnected
     {
-        get => (s_CurrentGamepad != null);
+        get => (CurrentGamepad != null);
     }
-    public static bool s_NoGameDeviceConnected
+    public bool NoGameDeviceConnected
     {
-        get => (s_GameDeviceCount == 0);
+        get => (GameDeviceCount == 0);
     }
 
-    public static bool s_KeyboardPress
+    public bool KeyboardPress
     {
-        get => s_CurrentKeyboard.anyKey.IsPressed();
+        get => CurrentKeyboard.anyKey.IsPressed();
     }
-    public static bool s_MousePress
+    public bool MousePress
     {
         get =>
-            (s_CurrentMouse.allControls.Count(
+            (CurrentMouse.allControls.Count(
                 x =>
                     x is ButtonControl &&
                     x.IsPressed()
             ) > 0);
     }
-    public static bool s_GamepadPress
+    public bool GamepadPress
     {
         get =>
-            (s_CurrentGamepad.allControls.Count(
+            (CurrentGamepad.allControls.Count(
                 x =>
                     x is ButtonControl &&
                     x.IsPressed()
             ) > 0);
     }
-    public static bool s_GameDevicePress
+    public bool GameDevicePress
     {
-        get => (s_KeyboardPress || s_MousePress || s_GamepadPress);
+        get => (KeyboardPress || MousePress || GamepadPress);
     }
 
     [SerializeField] private bool m_dontDestroyOnLoad = true;
 
     private void Awake()
     {
+        if (!InitialiseSingleton())
+        {
+            return;
+        }
+
         if (m_dontDestroyOnLoad)
         {
             DontDestroyOnLoad(gameObject);

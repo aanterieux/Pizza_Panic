@@ -13,6 +13,9 @@
 /[Uu]ser[Ss]ettings/
 *.log
 /Builds/Tests/
+/_Recovery/
+_Recovery.meta
+0.*
 
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
 *.blend1

@@ -102,7 +102,10 @@ public class Gun : Item
 
             if (m_reloadTextTrigger && m_ammoText)
             {
-                AudioPlayer_.PlayOneShot(m_reloadStartSound);
+                AudioManager.s_Instance.Play3D(
+                    m_reloadStartSound,
+                    transform.position
+                );
 
                 m_ammoText.text = $"Reloading.../{m_reserveAmmo}";
                 m_reloadTextTrigger = false;
@@ -110,7 +113,10 @@ public class Gun : Item
 
             if (m_reloadTimer >= m_reloadDuration)
             {
-                AudioPlayer_.PlayOneShot(m_reloadEndSound);
+                AudioManager.s_Instance.Play3D(
+                    m_reloadEndSound,
+                    transform.position
+                );
                 Reload();
                 m_reloadTextTrigger = true;
             }
@@ -123,6 +129,12 @@ public class Gun : Item
             m_isReloading = true;
             m_reloadTimer = 0f;
 
+            return;
+        }
+
+        if (m_isShooting && m_currentMagazineAmmo == 0)
+        {
+            AudioManager.s_Instance.Play3D(m_noAmmoSound, transform.position);
             return;
         }
 
@@ -146,9 +158,14 @@ public class Gun : Item
         float pitchMin = 1f - m_pitchVariation;
         float pitchMax = 1f + m_pitchVariation;
 
-        AudioPlayer_.pitch = Random.Range(pitchMin, pitchMax);
-        AudioPlayer_.PlayOneShot(m_shootSound);
-        AudioPlayer_.pitch = 1f;
+        AudioManager.s_Instance.Play3D(
+            m_shootSound,
+            transform.position,
+            new AudioManager.AudioParams(
+                0.75f,
+                Random.Range(pitchMin, pitchMax)
+            )
+        );
 
         m_ray.origin = HolderTransform_.position;
         m_ray.direction = HolderTransform_.forward;

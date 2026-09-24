@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ZombieManager : MonoBehaviour
+public class ZombieManager : MySingleton<ZombieManager>
 {
     [SerializeField] [Range(0, 1000)]
      private int m_maxZombieCount = 100;
@@ -19,6 +19,11 @@ public class ZombieManager : MonoBehaviour
 
     private void Awake()
     {
+        if (!InitialiseSingleton())
+        {
+            return;
+        }
+
         if (m_dontDestroyOnLoad)
         {
             DontDestroyOnLoad(gameObject);

@@ -1,7 +1,6 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(AudioSource))]
 public class Item : MonoBehaviour
 {
     [Header("-- Item --")]
@@ -11,7 +10,6 @@ public class Item : MonoBehaviour
      private float m_distanceWithHolder = 1.5f;
 
     private Rigidbody m_rb = null;
-    private AudioSource m_audioSource = null;
     private Vector3 m_baseSize = Vector3.one;
     private float m_baseRadius = 0.5f;
     private float m_baseHeight = 2f;
@@ -33,18 +31,6 @@ public class Item : MonoBehaviour
             return m_rb;
         }
     }
-    protected AudioSource AudioPlayer_
-    {
-        get
-        {
-            if (!m_audioSource)
-            {
-                m_audioSource = GetComponent<AudioSource>();
-            }
-
-            return m_audioSource;
-        }
-    }
     protected Transform HolderTransform_
     {
         get => m_holderTransform_;
@@ -59,11 +45,6 @@ public class Item : MonoBehaviour
         get => m_isPickedUp;
     }
 
-
-    private void Awake()
-    {
-        AudioPlayer_.playOnAwake = false;
-    }
 
     private void Start()
     {

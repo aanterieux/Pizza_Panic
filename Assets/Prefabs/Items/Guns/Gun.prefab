@@ -130,13 +130,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Gun
   m_hitboxFactor: 1.25
   m_distanceWithHolder: 1.5
-  m_shotsPerSecond: 5
-  m_damagePerShot: 6
-  m_magazineCapacity: 15
+  m_shotsPerSecond: 7
+  m_damagePerShot: 7
+  m_magazineCapacity: 30
   m_startMagazineCount: 4
-  m_reloadDuration: 1.5
+  m_reloadDuration: 1.75
   m_gunUI: {fileID: 7687590540186493672, guid: d44c237498261a448927dee6d7961d77, type: 3}
   m_particlePrefab: {fileID: 985160407705110243, guid: 28509bc1b19993e4d94d373cbe4d707b, type: 3}
+  m_shootSound: {fileID: 8300000, guid: 1f5a2af738b3d4c4fb280a0d7b8e7bdc, type: 3}
+  m_reloadStartSound: {fileID: 8300000, guid: 3e9b06fcfc72fe943a2abe08aaf5e024, type: 3}
+  m_reloadEndSound: {fileID: 8300000, guid: 05d75a51d6b91f84eb931c585fcccab3, type: 3}
+  m_noAmmoSound: {fileID: 8300000, guid: 6687e4a44676f464ab006e6e4f918018, type: 3}
+  m_pitchVariation: 0.15
 --- !u!54 &1751830802885411749
 Rigidbody:
   m_ObjectHideFlags: 0

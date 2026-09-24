@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 8264782154850830273}
   - component: {fileID: 8729564242316234040}
   - component: {fileID: 7095469421230724018}
-  - component: {fileID: 8695995404297307847}
+  - component: {fileID: 5603901226293811385}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -340,12 +340,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 165da3986909d56448d8c2f246f2b4f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  m_baseMoveSpeed: 4
+  m_baseMoveSpeed: 4.5
   m_runSpeedMultiplier: 1.75
-  m_jumpForce: 5
-  m_deceleration: 10
+  m_jumpForce: 4.75
+  m_deceleration: 15
   m_toggleToRun: 1
-  m_rotationSpeed: 4
+  m_rotationSpeed: 6
   m_invertHAxis: 0
   m_maxSlopeAngle: 60
   m_groundCheckRadius: 0.3
@@ -367,7 +367,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e5a503f68ee4634daf1ffff4f8bfd4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerActionManager
---- !u!114 &8695995404297307847
+--- !u!114 &5603901226293811385
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -376,9 +376,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 204657727352569076}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 147d47868e409ed4f82b745b519a7fd0, type: 3}
+  m_Script: {fileID: 11500000, guid: b3791dd3a3a4bca44b8f717d41f08e31, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAudioController
+  m_footstepSound: {fileID: 8300000, guid: 3d2ae2cf38540d54ea908e00881c4fe5, type: 3}
+  m_jumpSound: {fileID: 8300000, guid: 5cdd25048a59c1345bd175ca55342661, type: 3}
+  m_landingSound: {fileID: 0}
+  m_itemPickupSound: {fileID: 8300000, guid: ad7e4895df6df28459bb1e4740afb6ef, type: 3}
+  m_itemThrowSound: {fileID: 8300000, guid: 8c123c29d3d1d7549abff03502a29554, type: 3}
+  m_gunEquipSound: {fileID: 8300000, guid: 5cdd25048a59c1345bd175ca55342661, type: 3}
+  m_gunUnequipSound: {fileID: 0}
+  m_meleeAttackHitSound: {fileID: 0}
+  m_hurtSound: {fileID: 8300000, guid: 7bfae392170a43344bb2dd6c4f9010a6, type: 3}
+  m_deathSound: {fileID: 8300000, guid: 367f6c0fca9855c42bb92d7ba7b1525c, type: 3}
 --- !u!1 &1264902208986109215
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,6 +539,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 142b22dafe763814ea5d12acfef72fd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerViewController
-  m_rotationSpeed: 3.5
-  m_maxRotationAngle: 45
+  m_rotationSpeed: 4.75
+  m_maxRotationAngle: 60
   m_invertVAxis: 0
+  m_idleUpDownBobSpeed: 3
+  m_walkUpDownBobSpeed: 9.5
+  m_runUpDownBobSpeed: 15
+  m_upDownBobStrength: 0.005
+  m_walkLeftRightBobSpeed: 6
+  m_runLeftRightBobSpeed: 10
+  m_leftRightBobStrength: 0.05

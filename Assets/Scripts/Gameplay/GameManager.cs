@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MySingleton<GameManager>
 {
     [SerializeField] private GameObject m_gameOverUI = null;
     [SerializeField] [Min(0f)]
@@ -17,6 +17,11 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        if (!InitialiseSingleton())
+        {
+            return;
+        }
+
         if (m_dontDestroyOnLoad)
         {
             DontDestroyOnLoad(gameObject);
@@ -68,7 +73,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
@@ -104,7 +109,7 @@ public class GameManager : MonoBehaviour
 
     private bool CheckMouseValidity(in string _action)
     {
-        if (!InputManager.s_MouseConnected)
+        if (!InputManager.s_Instance.MouseConnected)
         {
             LogUtils.LogWarning($"Could not {_action} cursor: no mouse connected");
             return false;
@@ -142,7 +147,7 @@ public class GameManager : MonoBehaviour
 
     public void WarpCursorToScreenCenter()
     {
-        if (!InputManager.s_MouseConnected)
+        if (!InputManager.s_Instance.MouseConnected)
         {
             return;
         }
@@ -152,7 +157,7 @@ public class GameManager : MonoBehaviour
             Screen.height
         );
 
-        InputManager.s_CurrentMouse.WarpCursorPosition(screenCenter);
+        InputManager.s_Instance.CurrentMouse.WarpCursorPosition(screenCenter);
     }
 
     public void TriggerGameOver()

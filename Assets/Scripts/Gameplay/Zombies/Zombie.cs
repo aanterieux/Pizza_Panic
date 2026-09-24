@@ -30,15 +30,20 @@ public class Zombie : MonoBehaviour
     [SerializeField] private float m_attackCooldown = 0.8f;
     [SerializeField] private int m_damage = 15;
 
-    [Header("- Misc -")]
+    [Header("- Feedback -")]
+    [SerializeField] private AudioClip m_attackSound = null;
+    [SerializeField] private AudioClip m_hurtSound = null;
+    [SerializeField] private AudioClip m_deathSound = null;
     [SerializeField] private Color m_hurtColour = Color.white;
+    [SerializeField] [Min(0f)]
+     private float m_visualFeedbackSpeed = 1f;
+
+    [Header("- Misc -")]
     [SerializeField] private ZombieState m_state = ZombieState.CHASE;
     [SerializeField] private uint m_destinationUpdatesPerSecond = 16U;
     [SerializeField] private float m_burySpeed = 5f;
     [SerializeField] private float m_distanceToAttack = 0.5f;
     [SerializeField] private float m_distanceToChase = 0.75f;
-    [SerializeField] [Min(0f)]
-     private float m_feedbackSpeed = 1f;
 
     private const int EFFECT_COUNT = ((int)(ZombieEffect.COUNT)) - 2;
 
@@ -98,7 +103,7 @@ public class Zombie : MonoBehaviour
         if (m_feedbackTimer < 1f &&
             m_state != ZombieState.DEAD)
         {
-            m_feedbackTimer += m_feedbackSpeed * Time.deltaTime;
+            m_feedbackTimer += m_visualFeedbackSpeed * Time.deltaTime;
             m_meshRenderer.material.color =
                 Color.Lerp(
                     m_hurtColour,
@@ -211,10 +216,19 @@ public class Zombie : MonoBehaviour
                             m_origin.NotifyZombieDeath();
                         }
 
-                        Gun gun = m_playerTransform
-                            .GetComponent<PlayerInventory>()
-                            .m_CurrentItem as Gun;
-                        gun.GiveAmmos(Random.Range(2, 12 + 1));
+                        if (m_playerTransform)
+                        {
+                            Item playerItem =
+                                m_playerTransform
+                                .GetComponent<PlayerInventory>()
+                                .m_CurrentItem;
+
+                            if (playerItem)
+                            {
+                                (playerItem as Gun)
+                                    .GiveAmmos(Random.Range(2, 12 + 1));
+                            }
+                        }
 
                         Destroy(gameObject);
                     }
@@ -281,11 +295,15 @@ public class Zombie : MonoBehaviour
     public void TriggerAttack()
     {
         m_state = ZombieState.ATTACK;
+
+        AudioManager.s_Instance.Play3D(m_attackSound, transform.position, AudioManager.AudioParams.s_Sound);
     }
 
     private void Die()
     {
         m_state = ZombieState.DEAD;
+     
+        AudioManager.s_Instance.Play3D(m_deathSound, transform.position, AudioManager.AudioParams.s_Sound);
     }
 
     private float GetDistanceToPlayer()
@@ -301,6 +319,8 @@ public class Zombie : MonoBehaviour
     {
         m_meshRenderer.material.color = Color.white;
         m_feedbackTimer = 0f;
+
+        AudioManager.s_Instance.Play3D(m_hurtSound, transform.position, AudioManager.AudioParams.s_Sound);
     }
 
 

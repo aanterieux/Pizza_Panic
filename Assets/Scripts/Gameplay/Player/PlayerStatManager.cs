@@ -223,9 +223,17 @@ public class PlayerStatManager : PlayerComponent
     public void TakeDamage(int _damage)
     {
         m_health -= _damage;
-        m_regenerationDelayTrigger = true;
         m_healthBuffer = m_health;
 
         TryAdaptHealthText();
+
+        if (m_health <= 0)
+        {
+            AudioController_.PlayDeathSound();
+            return;
+        }
+
+        m_regenerationDelayTrigger = true;
+        AudioController_.PlayDamagedSound();
     }
 }
