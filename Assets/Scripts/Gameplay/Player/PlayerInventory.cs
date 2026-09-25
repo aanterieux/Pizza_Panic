@@ -4,25 +4,30 @@ public class PlayerInventory : PlayerComponent
 {
     [SerializeField] private Item m_currentItem = null;
 
-    private Item m_currentItemCpy = null;
+    private Item m_previousItem = null;
 
-    public Item m_CurrentItem
+    public Item CurrentItem
     {
         get => m_currentItem;
     }
 
     private void OnValidate()
     {
-        if (m_currentItemCpy != m_currentItem)
+        if (m_previousItem != m_currentItem)
         {
             SetCurrentItem(m_currentItem);
 
             if (m_currentItem)
             {
-                m_currentItem.OnPickup(m_CamTransform_);
+                m_currentItem.OnPickup(CamTransform_);
             }
 
-            m_currentItemCpy = m_currentItem;
+            if (m_previousItem)
+            {
+                m_previousItem.OnRelease();
+            }
+
+            m_previousItem = m_currentItem;
         }
     }
 
@@ -40,6 +45,11 @@ public class PlayerInventory : PlayerComponent
         }
 
         m_currentItem = _item;
+
+        if (m_currentItem)
+        {
+            m_currentItem.OnPickup(CamTransform_);
+        }
     }
     public void ClearCurrentItem()
     {

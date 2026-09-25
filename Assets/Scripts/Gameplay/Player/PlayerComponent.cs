@@ -5,7 +5,7 @@ public class PlayerComponent : MonoBehaviour
     private Transform m_camTransform = null;
     private PlayerAudioController m_audioController = null;
 
-    protected Transform m_CamTransform_
+    protected Transform CamTransform_
     {
         get
         {

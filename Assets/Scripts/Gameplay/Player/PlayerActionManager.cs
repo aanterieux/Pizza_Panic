@@ -59,13 +59,13 @@ public class PlayerActionManager : PlayerComponent
     {
         if (_item == null ||
             _item.IsPickedUp ||
-            m_inventory.m_CurrentItem == _item)
+            m_inventory.CurrentItem == _item)
         {
             return;
         }
 
         m_inventory.SetCurrentItem(_item);
-        _item.OnPickup(m_CamTransform_);
+        _item.OnPickup(CamTransform_);
 
         if (_item is Gun)
         {
@@ -106,8 +106,8 @@ public class PlayerActionManager : PlayerComponent
 
     private void UpdateRayOriginAndDirection()
     {
-        m_ray.origin = m_CamTransform_.position;
-        m_ray.direction = m_CamTransform_.forward;
+        m_ray.origin = CamTransform_.position;
+        m_ray.direction = CamTransform_.forward;
     }
 
 
@@ -120,7 +120,7 @@ public class PlayerActionManager : PlayerComponent
         UpdateRayOriginAndDirection();
 
         float maxRayDistance = 0f;
-        Item currentItem = m_inventory.m_CurrentItem;
+        Item currentItem = m_inventory.CurrentItem;
 
         switch (currentItem)
         {
@@ -255,7 +255,7 @@ public class PlayerActionManager : PlayerComponent
             return;
         }
 
-        Item item = m_inventory.m_CurrentItem;
+        Item item = m_inventory.CurrentItem;
 
         if (!item)
         {

@@ -221,7 +221,7 @@ public class Zombie : MonoBehaviour
                             Item playerItem =
                                 m_playerTransform
                                 .GetComponent<PlayerInventory>()
-                                .m_CurrentItem;
+                                .CurrentItem;
 
                             if (playerItem)
                             {

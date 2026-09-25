@@ -28,9 +28,9 @@ public class Gun : Item
      private float m_pitchVariation = 0.25f;
 
     private Collider m_collider = null;
-    private Ray m_ray = new Ray();
     private TextMeshProUGUI m_ammoText = null;
     private ParticleSystem m_particleSys = null;
+    private Ray m_ray = new Ray();
     private float m_shotCooldown = 0f;
     private float m_shotTimer = 0f;
     private float m_shotReach = 0f;
