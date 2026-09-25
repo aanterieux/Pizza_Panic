@@ -68,8 +68,8 @@ public class Item : MonoBehaviour
 
     private Rigidbody m_rb = null;
     private Vector3 m_initialColliderSize = Vector3.one;
-    private TransformData m_initialTranformData;
-    private TransformData m_initialTansformDataCpy;
+    private TransformData m_initialTranformData = new();
+    private TransformData m_initialTansformDataCpy = default;
     private float m_baseRadius = 0.5f;
     private float m_baseHeight = 2f;
     private float m_hitboxFactorCpy = 0f;
@@ -240,10 +240,10 @@ public class Item : MonoBehaviour
 
         if (!Application.isPlaying)
         {
+            transform.SetParent(m_initialTranformData.Parent);
             transform.position = m_initialTranformData.Position;
             transform.rotation = m_initialTranformData.Rotation;
             transform.localScale = m_initialTranformData.Scale;
-            transform.SetParent(m_initialTranformData.Parent);
 
             return;
         }

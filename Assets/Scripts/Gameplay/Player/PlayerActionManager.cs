@@ -64,6 +64,13 @@ public class PlayerActionManager : PlayerComponent
             return;
         }
 
+        Item currentItem = m_inventory.CurrentItem;
+
+        if (currentItem && Application.isPlaying)
+        {
+            currentItem.transform.position = _item.transform.position;
+        }
+
         m_inventory.SetCurrentItem(_item);
         _item.OnPickup(CamTransform_);
 
