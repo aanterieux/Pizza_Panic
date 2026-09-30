@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
 
 public class PlayerController : PlayerComponent
 {
@@ -12,6 +13,7 @@ public class PlayerController : PlayerComponent
 
     [Header("- Rotation -")]
     [SerializeField] private float m_rotationSpeed = 4f;
+    [SerializeField] private float m_gamepadSpeedFactor = 20f;
     [SerializeField] private bool m_invertHAxis = false;
 
     [Header("- Ground detection -")]
@@ -35,6 +37,10 @@ public class PlayerController : PlayerComponent
     private bool m_isGrounded = false;
     private bool m_isRunning = false;
 
+    public float GamepadSpeedFactor
+    {
+        get => m_gamepadSpeedFactor;
+    }
     public float MoveSpeed
     {
         get => m_finalMoveSpeed;
@@ -64,7 +70,7 @@ public class PlayerController : PlayerComponent
         if (m_jumpBufferTimer > 0f && m_coyoteTimer > 0f)
         {
             Jump();
-            AudioController_.PlayJumpSound();
+            audioController_.PlayJumpSound();
             m_isGrounded = false;
 
             m_coyoteTimer = 0f;
@@ -91,17 +97,35 @@ public class PlayerController : PlayerComponent
 
     private void Rotate()
     {
-        if (!InputManager.s_Instance.MouseConnected)
+        InputManager inputManager = InputManager.s_Instance;
+
+        if (!inputManager)
         {
+            LogUtils.LogWarning("Cannot rotate: InputManager.s_Instance is null");
             return;
         }
 
-        Vector2 rotationAxis = InputManager.s_Instance.MouseDelta;
+        bool isGamepadConnected = (inputManager.GamepadConnected);
+        float horizontalDelta =
+            (isGamepadConnected)
+                ? inputManager.GamepadDelta_Right.x
+                : inputManager.MouseDelta.x;
         float horizontal =
-            rotationAxis.x *
-            (m_invertHAxis ? -1f : 1f);
+            horizontalDelta *
+            (m_invertHAxis
+                ? -1f
+                : 1f
+            );
+        float speedFactor =
+            (isGamepadConnected)
+                ? GamepadSpeedFactor
+                : 1f;
 
-        m_yaw += horizontal * m_rotationSpeed * Time.deltaTime;
+        m_yaw +=
+            Time.deltaTime
+            * horizontal
+            * speedFactor
+            * m_rotationSpeed;
     }
 
     private void HandleMovement()
@@ -149,7 +173,7 @@ public class PlayerController : PlayerComponent
 
         if (m_footstepSoundTimer >= playInterval)
         {
-            AudioController_.PlayFootstepSound();
+            audioController_.PlayFootstepSound();
             m_footstepSoundTimer = 0f;
         }
     }
@@ -275,30 +299,18 @@ public class PlayerController : PlayerComponent
         return groundDot < minGroundDot;
     }
 
-    private void OnMoveTemplate(in InputAction.CallbackContext _context,ref float axis)
+    public void OnMove(InputAction.CallbackContext _context)
     {
         if (_context.canceled)
         {
-            axis = 0f;
+            m_movement.x = 0f;
+            m_movement.z = 0f;
             return;
         }
 
-        axis = _context.ReadValue<float>();
-    }
-
-    public void OnMoveX(InputAction.CallbackContext _context)
-    {
-        OnMoveTemplate(
-            _context,
-            ref m_movement.x
-        );
-    }
-    public void OnMoveZ(InputAction.CallbackContext _context)
-    {
-        OnMoveTemplate(
-            _context,
-            ref m_movement.z
-        );
+        Vector2 axis = _context.ReadValue<Vector2>();
+        m_movement.x = axis.x;
+        m_movement.z = axis.y;
     }
 
     public void OnJump(InputAction.CallbackContext _context)

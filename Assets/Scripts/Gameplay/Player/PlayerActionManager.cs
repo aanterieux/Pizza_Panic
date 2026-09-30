@@ -41,6 +41,8 @@ public class PlayerActionManager : PlayerComponent
 
             m_meleeAttackTimer = 0f;
             m_meleeAttackTrigger = false;
+
+            audioController_.PlayMeleeAttackSound();
         }
     }
 
@@ -64,23 +66,22 @@ public class PlayerActionManager : PlayerComponent
             return;
         }
 
-        Item currentItem = m_inventory.CurrentItem;
-
-        if (currentItem && Application.isPlaying)
-        {
-            currentItem.transform.position = _item.transform.position;
-        }
+        Item previousItem = m_inventory.CurrentItem;
 
         m_inventory.SetCurrentItem(_item);
-        _item.OnPickup(CamTransform_);
+
+        if (previousItem && Application.isPlaying)
+        {
+            previousItem.transform.position = _item.transform.position;
+        }
 
         if (_item is Gun)
         {
-            AudioController_.PlayGunEquipSound();
+            audioController_.PlayGunEquipSound();
             return;
         }
 
-        AudioController_.PlayItemPickupSound();
+        audioController_.PlayItemPickupSound();
     }
     private void DropItem(Item _item)
     {
@@ -108,13 +109,13 @@ public class PlayerActionManager : PlayerComponent
 
         _throwableItem.OnThrow(_throwForce);
         m_inventory.ClearCurrentItem();
-        AudioController_.PlayItemThrowSound();
+        audioController_.PlayItemThrowSound();
     }
 
     private void UpdateRayOriginAndDirection()
     {
-        m_ray.origin = CamTransform_.position;
-        m_ray.direction = CamTransform_.forward;
+        m_ray.origin = camTransform_.position;
+        m_ray.direction = camTransform_.forward;
     }
 
 
@@ -287,5 +288,15 @@ public class PlayerActionManager : PlayerComponent
     public void OnSwitchWeapon(InputAction.CallbackContext _context)
     {
 
+    }
+
+    public void OnPauseGame(InputAction.CallbackContext _context)
+    {
+        if (!_context.started)
+        {
+            return;
+        }
+
+        GameManager.s_Instance.PauseGame();
     }
 }

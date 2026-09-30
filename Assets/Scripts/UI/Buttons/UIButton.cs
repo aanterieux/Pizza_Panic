@@ -1,22 +1,22 @@
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Unity.VisualScripting;
-using TMPro;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public abstract class UIButton<TButtonType> :
-    MonoBehaviour,
+    UIElement,
         IPointerEnterHandler,
         IPointerExitHandler
     where TButtonType : System.Enum
 {
+    [Header("-- UIButton --")]
     [SerializeField] private TButtonType m_buttonType;
-    [Space]
-    [SerializeField] private AudioClip m_clickSound = null;
-    [SerializeField] private AudioClip m_focusSound = null;
-    [SerializeField] private AudioClip m_unfocusSound = null;
 
     private TextMeshProUGUI m_buttonText = null;
+    private Button m_button = null;
     private TButtonType m_typeCpy;
 
     private TextMeshProUGUI buttonText
@@ -31,59 +31,130 @@ public abstract class UIButton<TButtonType> :
             return m_buttonText;
         }
     }
-
-    protected TButtonType ButtonType_
+    private Button button
     {
-        get => m_buttonType;
-    }
-    protected AudioClip FocusSound_
-    {
-        get => m_focusSound;
-    }
-    protected AudioClip UnfocusSound_
-    {
-        get => m_unfocusSound;
-    }
-    protected AudioClip ClickSound_
-    {
-        get => m_clickSound;
-    }
-
-    protected void OnValidate()
-    {
-        if (!EqualityComparer<TButtonType>.Default.Equals(m_typeCpy, ButtonType_)
-            && buttonText)
+        get
         {
-            m_buttonText.text =
-                ButtonType_
-                .ToString()
-                .ToLowerInvariant()
-                .FirstCharacterToUpper();
-            m_typeCpy = ButtonType_;
+            TextMeshProUGUI tmpText = buttonText;
+
+            if (tmpText)
+            {
+                m_button = tmpText.GetComponentInParent<Button>();
+            }
+
+            return m_button;
         }
     }
 
-
-    public virtual void OnClick()
+    public TButtonType ButtonType
     {
-        AudioManager.s_Instance.Play2D(
-            m_clickSound,
-            AudioManager.AudioParams.s_Sound
-        );
+        get => m_buttonType;
     }
 
-    public virtual void OnPointerEnter(PointerEventData _eventData)
+    private void Awake()
     {
-        AudioManager.s_Instance.Play2D(
-            m_focusSound,
-            AudioManager.AudioParams.s_Sound
-        );
+        InputSystem.onDeviceChange += OnGamepadConnectDisconnect;
+
+        if (!button)
+        {
+            return;
+        }
+
+        Navigation noNav = m_button.navigation;
+        noNav.mode = Navigation.Mode.None;
+        m_button.navigation = noNav;
+
+        button.onClick.AddListener(OnClick);
+
+        UpdateButtonText();
     }
-    public virtual void OnPointerExit(PointerEventData _eventData)
+
+    private void OnValidate()
     {
-        AudioManager.s_Instance.Play2D(
-            m_unfocusSound,
-            AudioManager.AudioParams.s_Sound
-        );
+        UpdateButtonText();
+        OnButtonValidate();
+    }
+
+    private void OnDestroy()
+    {
+        InputSystem.onDeviceChange -= OnGamepadConnectDisconnect;
+    }
+
+
+    private void UpdateButtonText()
+    {
+        if (!EqualityComparer<TButtonType>.Default.Equals(m_typeCpy, ButtonType)
+            && buttonText)
+        {
+            m_buttonText.text =
+                ButtonType
+                .ToString()
+                .ToLowerInvariant()
+                .FirstCharacterToUpper();
+            m_typeCpy = ButtonType;
+        }
+    }
+
+    private void OnGamepadConnectDisconnect(InputDevice _device, InputDeviceChange _change)
+    {
+        if (!button || _device is not Gamepad)
+        {
+            return;
+        }
+
+        switch (_change)
+        {
+            case InputDeviceChange.Added:
+            case InputDeviceChange.Enabled:
+            case InputDeviceChange.Reconnected:
+                {
+                    button.interactable = true;
+                    button.onClick?.RemoveListener(OnClick);
+                }
+                break;
+
+            case InputDeviceChange.Disconnected:
+            case InputDeviceChange.Disabled:
+            case InputDeviceChange.Removed:
+                {
+                    button.interactable = false;
+                    button.onClick?.AddListener(OnClick);
+                }
+                break;
+
+            default:
+                {
+                }
+                break;
+        }
+    }
+
+    protected virtual void OnButtonValidate()
+    {
+    }
+
+
+    public void OnClick()
+    {
+        Interact();
+    }
+
+    public void OnPointerEnter(PointerEventData _eventData)
+    {
+        if (InputManager.s_Instance.GamepadConnected)
+        {
+            return;
+        }
+
+        Select();
+    }
+    public void OnPointerExit(PointerEventData _eventData)
+    {
+        if (InputManager.s_Instance.GamepadConnected)
+        {
+            return;
+        }
+
+        Deselect();
     }
 }

@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ea441d1852a4494d89ca5893539266f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  m_gameOverUI: {fileID: 3201377486818801305, guid: 15a2ff5c91071224bbe25e7e88def038, type: 3}
-  m_timeScale: 1
   m_dontDestroyOnLoad: 0
+  m_pauseUIPrefab: {fileID: 835849107393260689, guid: f2d74feb8cbffa542bf82f9126fcb0cc, type: 3}
+  m_gameOverUIPrefab: {fileID: 3201377486818801305, guid: 15a2ff5c91071224bbe25e7e88def038, type: 3}
+  m_timeScale: 1

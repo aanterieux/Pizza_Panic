@@ -9,7 +9,7 @@ public class PlayerAudioController : PlayerComponent
     [SerializeField] private AudioClip m_itemThrowSound = null;
     [SerializeField] private AudioClip m_gunEquipSound = null;
     [SerializeField] private AudioClip m_gunUnequipSound = null;
-    [SerializeField] private AudioClip m_meleeAttackHitSound = null;
+    [SerializeField] private AudioClip m_meleeAttackSound = null;
     [SerializeField] private AudioClip m_hurtSound = null;
     [SerializeField] private AudioClip m_deathSound = null;
 
@@ -53,9 +53,9 @@ public class PlayerAudioController : PlayerComponent
     {
         PlaySound(m_itemThrowSound);
     }
-    public void PlayMeleeAttackHitSound()
+    public void PlayMeleeAttackSound()
     {
-        PlaySound(m_meleeAttackHitSound);
+        PlaySound(m_meleeAttackSound);
     }
     public void PlayDamagedSound()
     {

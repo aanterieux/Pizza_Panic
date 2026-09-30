@@ -40,11 +40,10 @@ public class Gun : Item
     private bool m_isShooting = false;
     private bool m_isReloading = false;
     private bool m_isPickedUpCpy = false;
-    private bool m_reloadTextTrigger = true;
+    private bool m_reloadTrigger = true;
 
     private void Awake()
     {
-        //m_Rb_.linearVelocity = Vector3.zero;
         m_collider = GetComponent<Collider>();
 
         m_currentMagazineAmmo = m_magazineCapacity;
@@ -100,25 +99,23 @@ public class Gun : Item
         {
             m_reloadTimer += Time.deltaTime;
 
-            if (m_reloadTextTrigger && m_ammoText)
+            if (m_reloadTrigger)
             {
-                AudioManager.s_Instance.Play3D(
-                    m_reloadStartSound,
-                    transform.position
-                );
+                AudioManager.s_Instance.Play2D(m_reloadStartSound);
 
-                m_ammoText.text = $"Reloading.../{m_reserveAmmo}";
-                m_reloadTextTrigger = false;
+                if (m_ammoText)
+                {
+                    m_ammoText.text = $"Reloading.../{m_reserveAmmo}";
+                }
+
+                m_reloadTrigger = false;
             }
 
             if (m_reloadTimer >= m_reloadDuration)
             {
-                AudioManager.s_Instance.Play3D(
-                    m_reloadEndSound,
-                    transform.position
-                );
+                AudioManager.s_Instance.Play2D(m_reloadEndSound);
                 Reload();
-                m_reloadTextTrigger = true;
+                m_reloadTrigger = true;
             }
 
             return;
@@ -134,7 +131,7 @@ public class Gun : Item
 
         if (m_isShooting && m_currentMagazineAmmo == 0)
         {
-            AudioManager.s_Instance.Play3D(m_noAmmoSound, transform.position);
+            AudioManager.s_Instance.Play2D(m_noAmmoSound);
             return;
         }
 
@@ -158,17 +155,16 @@ public class Gun : Item
         float pitchMin = 1f - m_pitchVariation;
         float pitchMax = 1f + m_pitchVariation;
 
-        AudioManager.s_Instance.Play3D(
+        AudioManager.s_Instance.Play2D(
             m_shootSound,
-            transform.position,
             new AudioManager.AudioParams(
                 0.75f,
                 Random.Range(pitchMin, pitchMax)
             )
         );
 
-        m_ray.origin = HolderTransform_.position;
-        m_ray.direction = HolderTransform_.forward;
+        m_ray.origin = holderTransform_.position;
+        m_ray.direction = holderTransform_.forward;
 
         m_currentMagazineAmmo--;
 
@@ -262,18 +258,19 @@ public class Gun : Item
 
         m_reloadTimer = 0f;
         m_isReloading = true;
+        m_reloadTrigger = true;
     }
 
     public void OnEquip()
     {
-        if (!HolderTransform_)
+        if (!holderTransform_)
         {
             return;
         }
 
-        Rb_.isKinematic = true;
+        rb_.isKinematic = true;
 
-        transform.SetParent(HolderTransform_);
+        transform.SetParent(holderTransform_);
         transform.localPosition =
             new Vector3(0.33f, -0.4f, 0.6f);
         transform.localRotation =
@@ -286,7 +283,7 @@ public class Gun : Item
     }
     public void OnUnequip()
     {
-        Rb_.isKinematic = false;
+        rb_.isKinematic = false;
         m_isShooting = false;
 
         TrySetAmmoTextVisibility(false);

@@ -57,7 +57,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 204657727352569076}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -178,22 +178,6 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8729564242316234040}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: OnMoveZ
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 58ffcbe0-e7eb-432c-a96a-0a53b9f579aa
-    m_ActionName: 'Movement/MoveZ[/Keyboard/s,/Keyboard/w]'
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8729564242316234040}
-        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnJump
         m_Mode: 0
         m_Arguments:
@@ -226,7 +210,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8729564242316234040}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: OnMoveX
+        m_MethodName: OnMove
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -286,8 +270,12 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 26fe5bd7-cde2-4702-b194-364126a9ae60
     m_ActionName: 'Gameplay/Reload[/Keyboard/r]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 117e4a5b-3741-4f7c-b5dd-8b73b150854c
+    m_ActionName: 'Gameplay/PauseGame[/Keyboard/escape,/XInputControllerWindows/start]'
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: Keyboard and Mouse
+  m_DefaultControlScheme: 
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -346,6 +334,7 @@ MonoBehaviour:
   m_deceleration: 15
   m_toggleToRun: 1
   m_rotationSpeed: 6
+  m_gamepadSpeedFactor: 27.5
   m_invertHAxis: 0
   m_maxSlopeAngle: 60
   m_groundCheckRadius: 0.3
@@ -386,7 +375,7 @@ MonoBehaviour:
   m_itemThrowSound: {fileID: 8300000, guid: 8c123c29d3d1d7549abff03502a29554, type: 3}
   m_gunEquipSound: {fileID: 8300000, guid: 5cdd25048a59c1345bd175ca55342661, type: 3}
   m_gunUnequipSound: {fileID: 0}
-  m_meleeAttackHitSound: {fileID: 0}
+  m_meleeAttackSound: {fileID: 8300000, guid: bae07b0d04b3b0a4bb8cb3b141749a17, type: 3}
   m_hurtSound: {fileID: 8300000, guid: 7bfae392170a43344bb2dd6c4f9010a6, type: 3}
   m_deathSound: {fileID: 8300000, guid: 367f6c0fca9855c42bb92d7ba7b1525c, type: 3}
 --- !u!1 &1264902208986109215
@@ -418,7 +407,7 @@ Transform:
   m_GameObject: {fileID: 1264902208986109215}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.6, z: 0}
+  m_LocalPosition: {x: 0, y: 0.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -542,10 +531,10 @@ MonoBehaviour:
   m_rotationSpeed: 4.75
   m_maxRotationAngle: 60
   m_invertVAxis: 0
-  m_idleUpDownBobSpeed: 3
+  m_idleUpDownBobSpeed: 2.5
   m_walkUpDownBobSpeed: 9.5
-  m_runUpDownBobSpeed: 15
-  m_upDownBobStrength: 0.005
+  m_runUpDownBobSpeed: 16
+  m_upDownBobStrength: 0.0033
   m_walkLeftRightBobSpeed: 6
   m_runLeftRightBobSpeed: 10
-  m_leftRightBobStrength: 0.05
+  m_leftRightBobStrength: 0.025

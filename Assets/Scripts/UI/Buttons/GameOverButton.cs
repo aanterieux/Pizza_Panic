@@ -1,6 +1,6 @@
-public class GameOverButton : UIButton<GameOverButton.ButtonType>
+public class GameOverButton : UIButton<GameOverButton.GameOverButtonType>
 {
-    public enum ButtonType
+    public enum GameOverButtonType
     {
         RESTART,
         MENU
@@ -14,21 +14,22 @@ public class GameOverButton : UIButton<GameOverButton.ButtonType>
     private void ExitToMenu()
     {
         GameManager.s_Instance.ExitToMainMenu();
+        MenuController.s_Instance.SetMenuMode(MenuController.MenuMode.MAIN_MENU);
     }
 
 
-    public override void OnClick()
+    public override void Interact()
     {
-        base.OnClick();
+        base.Interact();
 
-        switch (base.ButtonType_)
+        switch (base.ButtonType)
         {
-            case ButtonType.RESTART:
+            case GameOverButtonType.RESTART:
                 {
                     RestartGame();
                 }
                 break;
-            case ButtonType.MENU:
+            case GameOverButtonType.MENU:
                 {
                     ExitToMenu();
                 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public abstract class MySingleton<T> : MonoBehaviour where T : MySingleton<T>
 {
@@ -8,11 +9,59 @@ public abstract class MySingleton<T> : MonoBehaviour where T : MySingleton<T>
         private set;
     }
 
+    private string m_name = "";
+
+    private void Awake()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
+        if (!InitialiseSingleton())
+        {
+            if (s_Instance == (T)(this))
+            {
+                LogUtils.LogError($"Cannot initialise {m_name}: singleton already exists");
+            }
+
+            return;
+        }
+
+        OnSingletonAwake();
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        OnSingletonDestroy();
+
+        if (s_Instance == this)
+        {
+            s_Instance = null;
+        }
+    }
+
+
+    protected virtual void OnSingletonAwake()
+    {
+    }
+
+    protected virtual void OnSingletonDestroy()
+    {
+    }
+
+
+    private void OnSceneLoaded(Scene _scene, LoadSceneMode _loadSceneMode)
+    {
+        InitialiseSingleton();
+    }
+
+
     protected bool InitialiseSingleton()
     {
         if (s_Instance != null &&
             s_Instance != this)
         {
+            m_name = gameObject.name;
             Destroy(gameObject);
             return false;
         }
@@ -21,11 +70,4 @@ public abstract class MySingleton<T> : MonoBehaviour where T : MySingleton<T>
         return true;
     }
 
-    protected virtual void OnDestroy()
-    {
-        if (s_Instance == this)
-        {
-            s_Instance = null;
-        }
-    }
 }

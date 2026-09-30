@@ -12,7 +12,6 @@ public class Holdable : Item
     protected Transform m_hitTransform_ = null;
     protected bool m_isThrown_ = false;
 
-
     private void Awake()
     {
         if (!m_holdableCollider)
@@ -29,7 +28,7 @@ public class Holdable : Item
     {
         base.OnValidate();
 
-        if (HitboxAdjustmentTrigger_)
+        if (hitboxAdjustmentTrigger_)
         {
             if (!m_holdableCollider)
             {
@@ -74,8 +73,8 @@ public class Holdable : Item
 
     private void ResetRigidbodyVelocity()
     {
-        Rb_.linearVelocity = Vector3.zero;
-        Rb_.angularVelocity = Vector3.zero;
+        rb_.linearVelocity = Vector3.zero;
+        rb_.angularVelocity = Vector3.zero;
     }
 
 
@@ -98,7 +97,7 @@ public class Holdable : Item
 
         OnRelease();
 
-        Rb_.AddForce(
+        rb_.AddForce(
             _throwForce * throwDirection
             + 0.33f * _throwForce * Vector3.up,
             ForceMode.VelocityChange

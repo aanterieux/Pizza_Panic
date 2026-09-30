@@ -17,34 +17,34 @@ public static class LogUtils
                 : _fallbackColour;
     }
 
-    private static string GetColouredText(string _text, string _colour)
+    private static string GetColouredText(object _text, string _colour)
     {
         return $"<color={_colour.ToLower()}>{_text}</color>";
     }
 
 
-    public static void LogInfo(string _text, Color? _colour = null)
+    public static void LogInfo(object _text, Color? _colour = null)
     {
         string colour = ResolveColour(_colour, INFO_COLOUR);
 
         Debug.Log(GetColouredText(_text, colour));
     }
-    public static void LogWarning(string _text, Color? _colour = null)
+    public static void LogWarning(object _text, Color? _colour = null)
     {
         string colour = ResolveColour(_colour, WARNING_COLOUR);
 
         Debug.LogWarning(GetColouredText(_text, colour));
     }
-    public static void LogError(string _text, Color? _colour = null)
+    public static void LogError(object _text, Color? _colour = null)
     {
         string colour = ResolveColour(_colour, ERROR_COLOUR);
 
         Debug.LogError(GetColouredText(_text, colour));
     }
-    public static void LogCondition(bool _condition, string _text = "", Color? _successColour = null, Color? _failureColour = null)
+    public static void LogCondition(bool _condition, object _text = null, Color? _successColour = null, Color? _failureColour = null)
     {
-        string text =
-            (_text == "")
+        object text =
+            (_text == null)
                 ? _condition.ToString()
                 : _text;
 

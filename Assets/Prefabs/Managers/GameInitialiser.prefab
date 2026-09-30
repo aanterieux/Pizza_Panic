@@ -45,8 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameInitialiser
   m_dontDestroyOnLoad: 1
-  m_GameManagerPrefab: {fileID: 545454268780569400, guid: fb43ec6ac7378914fa756262f3829255, type: 3}
-  m_InputManagerPrefab: {fileID: 2553012628607847766, guid: 98c6905056279174bbcb7eb6de21fc5b, type: 3}
-  m_AudioManagerPrefab: {fileID: 1721502109817764044, guid: dbd8323aac1e8cf4b825bab305d8aa17, type: 3}
-  m_ZombieManagerPrefab: {fileID: 6731395557128253474, guid: 30f0913535fc8d540990fd14262bb549, type: 3}
+  m_gameManagerPrefab: {fileID: 545454268780569400, guid: fb43ec6ac7378914fa756262f3829255, type: 3}
+  m_inputManagerPrefab: {fileID: 2553012628607847766, guid: 98c6905056279174bbcb7eb6de21fc5b, type: 3}
+  m_audioManagerPrefab: {fileID: 1721502109817764044, guid: dbd8323aac1e8cf4b825bab305d8aa17, type: 3}
+  m_menuControllerPrefab: {fileID: 1434316468594534180, guid: 8232a82def75b934abe941866f706293, type: 3}
+  m_zombieManagerPrefab: {fileID: 6731395557128253474, guid: 30f0913535fc8d540990fd14262bb549, type: 3}
   m_menuMusic: {fileID: 8300000, guid: 573dbf3c8d31bb142b0b03daa79ebee8, type: 3}

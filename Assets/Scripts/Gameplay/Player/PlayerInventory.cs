@@ -19,7 +19,7 @@ public class PlayerInventory : PlayerComponent
 
             if (m_currentItem)
             {
-                m_currentItem.OnPickup(CamTransform_);
+                m_currentItem.OnPickup(camTransform_);
             }
 
             if (m_previousItem)
@@ -48,7 +48,7 @@ public class PlayerInventory : PlayerComponent
 
         if (m_currentItem)
         {
-            m_currentItem.OnPickup(CamTransform_);
+            m_currentItem.OnPickup(camTransform_);
         }
     }
     public void ClearCurrentItem()

@@ -39,26 +39,41 @@ public class PlayerViewController : PlayerComponent
 
     private void Update()
     {
-        Bob();
-
-        if (!InputManager.s_Instance.MouseConnected)
-        {
-            return;
-        }
-
         Rotate();
+        Bob();
     }
 
     private void Rotate()
     {
+        InputManager inputManager = InputManager.s_Instance;
+
+        if (!inputManager)
+        {
+            LogUtils.LogWarning("Cannot look around: InputManager.s_Instance is null");
+            return;
+        }
+
+        bool isGamepadConnected = (inputManager.GamepadConnected);
+        float verticalDelta =
+            (isGamepadConnected)
+                ? inputManager.GamepadDelta_Right.y
+                : inputManager.MouseDelta.y;
         float verticalAngle =
-            InputManager.s_Instance.MouseDelta.y *
+            verticalDelta *
                 (m_invertVAxis
                     ? 1f
                     : -1f
                 );
+        float speedFactor =
+            (isGamepadConnected)
+                ? m_controller.GamepadSpeedFactor
+                : 1f;
 
-        m_verticalRotation += Time.deltaTime * verticalAngle * m_rotationSpeed;
+        m_verticalRotation +=
+            Time.deltaTime
+            * verticalAngle
+            * speedFactor
+            * m_rotationSpeed;
         m_verticalRotation = Mathf.Clamp(
             m_verticalRotation,
             -m_maxRotationAngle,

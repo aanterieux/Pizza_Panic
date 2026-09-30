@@ -11,7 +11,6 @@ Library: C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\BurstO
 --linker-options=PdbAltPath="Pizza Panic_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\Burst
---debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
 --decode-folder=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Library\Burst
 --output=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\BurstOutput\Data\Plugins\x86_64\lib_burst_generated
@@ -126,7 +125,6 @@ Library: C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\BurstO
 --linker-options=PdbAltPath="Pizza Panic_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\Burst
---debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
 --decode-folder=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Library\Burst
 --output=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\BurstOutput\Data\Plugins\x86_64\lib_burst_generated
@@ -243,7 +241,6 @@ Library: C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\BurstO
 --linker-options=PdbAltPath="Pizza Panic_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\Burst
---debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
 --decode-folder=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Library\Burst
 --output=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\BurstOutput\Data\Plugins\x86_64\lib_burst_generated
@@ -265,7 +262,6 @@ Library: C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\BurstO
 --linker-options=PdbAltPath="Pizza Panic_Data/Plugins/x86_64/lib_burst_generated.pdb"
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\Burst
---debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.4.0f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport
 --decode-folder=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Library\Burst
 --output=C:\Users\Anto\Unity Projects\3D\PC\Windows\GoofyGameJam2026\Temp\BurstOutput\Data\Plugins\x86_64\lib_burst_generated

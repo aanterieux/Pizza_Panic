@@ -229,11 +229,11 @@ public class PlayerStatManager : PlayerComponent
 
         if (m_health <= 0)
         {
-            AudioController_.PlayDeathSound();
+            audioController_.PlayDeathSound();
             return;
         }
 
         m_regenerationDelayTrigger = true;
-        AudioController_.PlayDamagedSound();
+        audioController_.PlayDamagedSound();
     }
 }

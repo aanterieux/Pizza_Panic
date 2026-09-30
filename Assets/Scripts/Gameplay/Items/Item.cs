@@ -78,7 +78,7 @@ public class Item : MonoBehaviour
 
     protected Transform m_holderTransform_ = null;
 
-    protected Rigidbody Rb_
+    protected Rigidbody rb_
     {
         get
         {
@@ -90,11 +90,11 @@ public class Item : MonoBehaviour
             return m_rb;
         }
     }
-    protected Transform HolderTransform_
+    protected Transform holderTransform_
     {
         get => m_holderTransform_;
     }
-    protected bool HitboxAdjustmentTrigger_
+    protected bool hitboxAdjustmentTrigger_
     {
         get => m_hitboxAdjustmentTrigger;
     }
@@ -103,7 +103,6 @@ public class Item : MonoBehaviour
     {
         get => m_isPickedUp;
     }
-
 
     private void Start()
     {
@@ -204,17 +203,13 @@ public class Item : MonoBehaviour
 
     public void OnPickup(Transform _holderTransform)
     {
-        bool isHolderNull = (_holderTransform == null);
-
-        if (isHolderNull)
+        if (!_holderTransform)
         {
             LogUtils.LogWarning("Cannot pickup item: _holderTransform is null");
             return;
         }
 
-        bool isSameHolder = (_holderTransform == m_holderTransform_);
-
-        if (isSameHolder)
+        if (_holderTransform == m_holderTransform_)
         {
             LogUtils.LogWarning("Cannot pickup item: it is already picked up");
             return;
@@ -222,8 +217,8 @@ public class Item : MonoBehaviour
 
         m_holderTransform_ = _holderTransform;
 
-        Rb_.isKinematic = true;
-        Rb_.useGravity = false;
+        rb_.isKinematic = true;
+        rb_.useGravity = false;
 
         transform.SetParent(m_holderTransform_);
         transform.localPosition = new Vector3(0f, 0f, m_distanceWithHolder);
@@ -232,8 +227,8 @@ public class Item : MonoBehaviour
     }
     public void OnRelease()
     {
-        Rb_.isKinematic = false;
-        Rb_.useGravity = true;
+        rb_.isKinematic = false;
+        rb_.useGravity = true;
 
         m_holderTransform_ = null;
         m_isPickedUp = false;
