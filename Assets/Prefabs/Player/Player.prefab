@@ -369,13 +369,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAudioController
   m_footstepSound: {fileID: 8300000, guid: 3d2ae2cf38540d54ea908e00881c4fe5, type: 3}
-  m_jumpSound: {fileID: 8300000, guid: 5cdd25048a59c1345bd175ca55342661, type: 3}
+  m_jumpSound: {fileID: 8300000, guid: 21eba4541a6d1b6478f91d0ef06b3ebe, type: 3}
   m_landingSound: {fileID: 0}
   m_itemPickupSound: {fileID: 8300000, guid: ad7e4895df6df28459bb1e4740afb6ef, type: 3}
   m_itemThrowSound: {fileID: 8300000, guid: 8c123c29d3d1d7549abff03502a29554, type: 3}
-  m_gunEquipSound: {fileID: 8300000, guid: 5cdd25048a59c1345bd175ca55342661, type: 3}
+  m_gunEquipSound: {fileID: 8300000, guid: 05d75a51d6b91f84eb931c585fcccab3, type: 3}
   m_gunUnequipSound: {fileID: 0}
-  m_meleeAttackSound: {fileID: 8300000, guid: bae07b0d04b3b0a4bb8cb3b141749a17, type: 3}
+  m_meleeAttackSound: {fileID: 8300000, guid: 62adfabf37a87334e8d238a48e5255e4, type: 3}
   m_hurtSound: {fileID: 8300000, guid: 7bfae392170a43344bb2dd6c4f9010a6, type: 3}
   m_deathSound: {fileID: 8300000, guid: 367f6c0fca9855c42bb92d7ba7b1525c, type: 3}
 --- !u!1 &1264902208986109215
