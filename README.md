@@ -6,7 +6,7 @@ Burn pizzas in the furnace, turn them into crispy ammunition, and survive the ho
 ## Game info
 **Developer**: Anto Méga\
 **Title**: Pizza Panic\
-**Version**: 0.5.0\
+**Version**: 0.9.10\
 **Status**: In Development\
 **Release date**: TBD\
 **Genres**:
