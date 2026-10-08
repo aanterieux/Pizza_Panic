@@ -30,6 +30,8 @@ public abstract class UIElement : MonoBehaviour
                 AudioManager.AudioParams.s_Sound
             );
         }
+
+        LogUtils.LogInfo(name);
     }
     public virtual void Deselect()
     {

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using TMPro;
 
 public abstract class UIButton<TButtonType> :
     UIElement,
@@ -14,9 +14,13 @@ public abstract class UIButton<TButtonType> :
 {
     [Header("-- UIButton --")]
     [SerializeField] private TButtonType m_buttonType;
+    [Space]
+    [SerializeField] private Color m_normalColour = Color.white;
+    [SerializeField] private Color m_selectionColour = ColourUtils.HexToColor("BFBFBF");
 
     private TextMeshProUGUI m_buttonText = null;
     private Button m_button = null;
+    private Image m_image = null;
     private TButtonType m_typeCpy;
 
     private TextMeshProUGUI buttonText
@@ -43,6 +47,20 @@ public abstract class UIButton<TButtonType> :
             }
 
             return m_button;
+        }
+    }
+    private Image image
+    {
+        get
+        {
+            TextMeshProUGUI tmpText = buttonText;
+
+            if (tmpText)
+            {
+                m_image = tmpText.GetComponentInParent<Image>();
+            }
+
+            return m_image;
         }
     }
 
@@ -131,6 +149,19 @@ public abstract class UIButton<TButtonType> :
 
     protected virtual void OnButtonValidate()
     {
+    }
+
+    public override void Select()
+    {
+        base.Select();
+
+        image.color = m_selectionColour;
+    }
+    public override void Deselect()
+    {
+        base.Deselect();
+
+        image.color = m_normalColour;
     }
 
 

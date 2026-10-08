@@ -47,9 +47,9 @@ public class ColourUtils
 
         return
             new Color(
-                rgbValues.r,
-                rgbValues.g,
-                rgbValues.b
+                rgbValues.r / 255f,
+                rgbValues.g / 255f,
+                rgbValues.b / 255f
             );
     }
 

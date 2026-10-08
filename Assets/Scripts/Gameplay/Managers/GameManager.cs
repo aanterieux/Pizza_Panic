@@ -1,8 +1,19 @@
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MySingleton<GameManager>
 {
+    public enum GameMode
+    {
+        MAIN_MENU,
+        OPTIONS,
+        SURVIVAL,
+        PAUSE,
+        GAME_OVER
+    }
+
     [SerializeField] private bool m_dontDestroyOnLoad = true;
     [Space]
     [SerializeField] private GameObject m_pauseUIPrefab = null;
@@ -12,10 +23,19 @@ public class GameManager : MySingleton<GameManager>
     private Transform m_canvasTransform = null;
     private PlayerStatManager m_playerStatManager = null;
     private GameObject m_pauseUI = null;
+    private GameMode m_gamemode = GameMode.MAIN_MENU;
+    private GameMode m_gamemodeCpy = GameMode.OPTIONS;
     private float m_timeScaleCpy = 1f;
     private bool m_isGameOver = false;
     private bool m_canTriggerGameOver = false;
     private bool m_hasSceneChanged = false;
+
+    public event Action m_OnGamemodeChanged = default;
+
+    public GameMode Gamemode
+    {
+        get => m_gamemode;
+    }
 
     private void Start()
     {
@@ -31,6 +51,12 @@ public class GameManager : MySingleton<GameManager>
         {
             RefreshSceneReferences();
             m_hasSceneChanged = false;
+        }
+
+        if (m_gamemodeCpy != m_gamemode)
+        {
+            m_OnGamemodeChanged?.Invoke();
+            m_gamemodeCpy = m_gamemode;
         }
 
         if (m_isGameOver)
@@ -81,6 +107,7 @@ public class GameManager : MySingleton<GameManager>
     protected override void OnSingletonDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        m_OnGamemodeChanged = null;
     }
 
 
@@ -88,6 +115,8 @@ public class GameManager : MySingleton<GameManager>
     {
         if (_scene.name != "MainMenu")
         {
+            m_gamemode = GameMode.SURVIVAL;
+
             WarpCursorToScreenCenter();
             HideAndLockCursor();
         }
@@ -164,6 +193,13 @@ public class GameManager : MySingleton<GameManager>
         InputManager.s_Instance.CurrentMouse.WarpCursorPosition(screenCenter);
     }
 
+    public void StartGame()
+    {
+        SceneManager.LoadScene("Pizzeria");
+
+        m_gamemode = GameMode.SURVIVAL;
+        MenuController.s_Instance.SetMenuMode(MenuController.MenuMode.NONE);
+    }
     public void PauseGame()
     {
         Time.timeScale = 0f;
@@ -174,6 +210,7 @@ public class GameManager : MySingleton<GameManager>
         }
 
         m_pauseUI.SetActive(true);
+        m_gamemode = GameMode.PAUSE;
         MenuController.s_Instance.SetMenuMode(MenuController.MenuMode.PAUSE);
     }
     public void ResumeGame()
@@ -185,6 +222,14 @@ public class GameManager : MySingleton<GameManager>
             m_pauseUI.SetActive(false);
         }
 
+        m_gamemode = GameMode.SURVIVAL;
+        MenuController.s_Instance.SetMenuMode(MenuController.MenuMode.NONE);
+    }
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        m_gamemode = GameMode.SURVIVAL;
         MenuController.s_Instance.SetMenuMode(MenuController.MenuMode.NONE);
     }
 
@@ -197,15 +242,20 @@ public class GameManager : MySingleton<GameManager>
         ShowAndUnlockCursor();
 
         Time.timeScale = 0f;
-    }
-
-    public void RestartGame()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        m_gamemode = GameMode.GAME_OVER;
+        MenuController.s_Instance.SetMenuMode(MenuController.MenuMode.GAME_OVER);
     }
 
     public void ExitToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
+
+        m_gamemode = GameMode.MAIN_MENU;
+        MenuController.s_Instance.SetMenuMode(MenuController.MenuMode.MAIN_MENU);
+    }
+
+    public void OnPauseGame(InputAction.CallbackContext _context)
+    {
+        PauseGame();
     }
 }

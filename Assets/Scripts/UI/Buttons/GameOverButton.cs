@@ -14,7 +14,6 @@ public class GameOverButton : UIButton<GameOverButton.GameOverButtonType>
     private void ExitToMenu()
     {
         GameManager.s_Instance.ExitToMainMenu();
-        MenuController.s_Instance.SetMenuMode(MenuController.MenuMode.MAIN_MENU);
     }
 
 
@@ -24,20 +23,9 @@ public class GameOverButton : UIButton<GameOverButton.GameOverButtonType>
 
         switch (base.ButtonType)
         {
-            case GameOverButtonType.RESTART:
-                {
-                    RestartGame();
-                }
-                break;
-            case GameOverButtonType.MENU:
-                {
-                    ExitToMenu();
-                }
-                break;
-            default:
-                {
-                }
-                break;
+            case GameOverButtonType.RESTART: RestartGame(); break;
+            case GameOverButtonType.MENU:    ExitToMenu();  break;
+            default: break;
         }
     }
 }

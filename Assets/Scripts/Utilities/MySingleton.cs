@@ -10,6 +10,7 @@ public abstract class MySingleton<T> : MonoBehaviour where T : MySingleton<T>
     }
 
     private string m_name = "";
+    private bool m_isInitialised = false;
 
     private void Awake()
     {
@@ -25,12 +26,18 @@ public abstract class MySingleton<T> : MonoBehaviour where T : MySingleton<T>
             return;
         }
 
+        m_isInitialised = true;
         OnSingletonAwake();
     }
 
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        if (!m_isInitialised)
+        {
+            return;
+        }
 
         OnSingletonDestroy();
 

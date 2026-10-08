@@ -214,11 +214,6 @@ public class PlayerActionManager : PlayerComponent
     //   - Drop picked up object
     public void OnSecondaryAction(InputAction.CallbackContext _context)
     {
-        if (!_context.started)
-        {
-            return;
-        }
-
         UpdateRayOriginAndDirection();
 
         Item item = null;
@@ -258,11 +253,6 @@ public class PlayerActionManager : PlayerComponent
 
     public void OnReload(InputAction.CallbackContext _context)
     {
-        if (!_context.started)
-        {
-            return;
-        }
-
         Item item = m_inventory.CurrentItem;
 
         if (!item)
@@ -292,11 +282,6 @@ public class PlayerActionManager : PlayerComponent
 
     public void OnPauseGame(InputAction.CallbackContext _context)
     {
-        if (!_context.started)
-        {
-            return;
-        }
-
         GameManager.s_Instance.PauseGame();
     }
 }

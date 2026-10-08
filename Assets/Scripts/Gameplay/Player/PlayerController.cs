@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
 
 public class PlayerController : PlayerComponent
 {
@@ -37,6 +36,19 @@ public class PlayerController : PlayerComponent
     private bool m_isGrounded = false;
     private bool m_isRunning = false;
 
+    private Rigidbody rb
+    {
+        get
+        {
+            if (!m_rb)
+            {
+                m_rb = GetComponent<Rigidbody>();
+            }
+
+            return m_rb;
+        }
+    }
+
     public float GamepadSpeedFactor
     {
         get => m_gamepadSpeedFactor;
@@ -58,7 +70,6 @@ public class PlayerController : PlayerComponent
 
     private void Awake()
     {
-        m_rb = GetComponent<Rigidbody>();
         m_capsule = GetComponent<CapsuleCollider>();
     }
 
@@ -79,7 +90,7 @@ public class PlayerController : PlayerComponent
 
         Quaternion rbRotation = Quaternion.Euler(0f, m_yaw, 0f);
 
-        m_rb.MoveRotation(rbRotation);
+        rb.MoveRotation(rbRotation);
 
         HandleMovement();
     }
@@ -152,12 +163,12 @@ public class PlayerController : PlayerComponent
         Vector3 movementDirection =
             transform.TransformDirection(movementInput) * m_finalMoveSpeed;
 
-        Vector3 velocity = m_rb.linearVelocity;
+        Vector3 velocity = rb.linearVelocity;
 
         velocity.x = movementDirection.x;
         velocity.z = movementDirection.z;
 
-        m_rb.linearVelocity = velocity;
+        rb.linearVelocity = velocity;
     }
     private void HandleMoveSound()
     {
@@ -180,7 +191,7 @@ public class PlayerController : PlayerComponent
 
     private void Decelerate()
     {
-        Vector3 velocity = m_rb.linearVelocity;
+        Vector3 velocity = rb.linearVelocity;
 
         Vector3 horizontalVelocity =
             new Vector3(
@@ -200,7 +211,7 @@ public class PlayerController : PlayerComponent
         velocity.x = newHorizontalVelocity.x;
         velocity.z = newHorizontalVelocity.z;
 
-        m_rb.linearVelocity = velocity;
+        rb.linearVelocity = velocity;
     }
 
     private void CheckGrounding()
@@ -275,11 +286,11 @@ public class PlayerController : PlayerComponent
     private void Jump()
     {
         Vector3 velocity =
-            m_rb.linearVelocity;
+            rb.linearVelocity;
 
         velocity.y = m_jumpForce;
 
-        m_rb.linearVelocity = velocity;
+        rb.linearVelocity = velocity;
     }
 
     private bool IsTooSteep(in Vector3 _groundNormal, in float _referenceAngle)
@@ -315,11 +326,9 @@ public class PlayerController : PlayerComponent
 
     public void OnJump(InputAction.CallbackContext _context)
     {
-        if (!m_rb)
+        if (!rb)
         {
-            LogUtils.LogWarning(
-                "Cannot jump: Rigidbody is null."
-            );
+            LogUtils.LogWarning("Cannot jump: Rigidbody is null.");
             return;
         }
 

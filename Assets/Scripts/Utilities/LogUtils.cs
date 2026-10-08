@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 
 public static class LogUtils
@@ -23,26 +24,44 @@ public static class LogUtils
     }
 
 
+    [Conditional("UNITY_EDITOR")]
+    [Conditional("DEVELOPMENT_BUILD")]
     public static void LogInfo(object _text, Color? _colour = null)
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         string colour = ResolveColour(_colour, INFO_COLOUR);
 
-        Debug.Log(GetColouredText(_text, colour));
+        UnityEngine.Debug.Log(GetColouredText(_text, colour));
+#endif
     }
+
+    [Conditional("UNITY_EDITOR")]
+    [Conditional("DEVELOPMENT_BUILD")]
     public static void LogWarning(object _text, Color? _colour = null)
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         string colour = ResolveColour(_colour, WARNING_COLOUR);
 
-        Debug.LogWarning(GetColouredText(_text, colour));
+        UnityEngine.Debug.LogWarning(GetColouredText(_text, colour));
+#endif
     }
+    
+    [Conditional("UNITY_EDITOR")]
+    [Conditional("DEVELOPMENT_BUILD")]
     public static void LogError(object _text, Color? _colour = null)
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         string colour = ResolveColour(_colour, ERROR_COLOUR);
 
-        Debug.LogError(GetColouredText(_text, colour));
+        UnityEngine.Debug.LogError(GetColouredText(_text, colour));
+#endif
     }
+
+    [Conditional("UNITY_EDITOR")]
+    [Conditional("DEVELOPMENT_BUILD")]
     public static void LogCondition(bool _condition, object _text = null, Color? _successColour = null, Color? _failureColour = null)
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         object text =
             (_text == null)
                 ? _condition.ToString()
@@ -55,7 +74,7 @@ public static class LogUtils
                 ? successColour
                 : failureColour;
 
-        Debug.Log(GetColouredText(text, colour));
+        UnityEngine.Debug.Log(GetColouredText(text, colour));
+#endif
     }
-
 }

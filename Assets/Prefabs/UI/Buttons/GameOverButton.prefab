@@ -137,6 +137,8 @@ MonoBehaviour:
   m_selectSound: {fileID: 8300000, guid: 9fa3e2e79485a9848b725b97a7b490fb, type: 3}
   m_interactSound: {fileID: 8300000, guid: b69b584f7d8a2874a91a38cc6a553966, type: 3}
   m_buttonType: 0
+  m_normalColour: {r: 1, g: 1, b: 1, a: 1}
+  m_selectionColour: {r: 0.7490196, g: 0.7490196, b: 0.7490196, a: 1}
 --- !u!1 &4853876588347791024
 GameObject:
   m_ObjectHideFlags: 0

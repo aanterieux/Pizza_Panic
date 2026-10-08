@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(PlayerInput))]
 public class MenuController : MySingleton<MenuController>
 {
     public enum MenuMode
@@ -23,7 +23,6 @@ public class MenuController : MySingleton<MenuController>
     [SerializeField] private bool m_dontDestroyOnLoad = false;
 
     private Canvas m_canvas = null;
-    private PlayerInput m_playerInput = null;
     private int m_selectionIndex = -1;
 
     private bool isListEmpty
@@ -40,19 +39,17 @@ public class MenuController : MySingleton<MenuController>
             DontDestroyOnLoad(gameObject);
         }
 
-        m_playerInput = GetComponent<PlayerInput>();
-    }
-
-    private void Start()
-    {
-        m_canvas = FindAnyObjectByType<Canvas>();
-
-        OnMenuModeChange();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
 
     private void UpdateElementList()
     {
+        if (!m_canvas)
+        {
+            m_canvas = FindAnyObjectByType<Canvas>();
+        }
+
         if (!m_canvas)
         {
             return;
@@ -95,7 +92,7 @@ public class MenuController : MySingleton<MenuController>
 
     private void SelectElement(int _index)
     {
-        if (!isListEmpty &&
+        if (isListEmpty &&
             !CommonUtils.IsInRangeInclusive(_index, 0, m_elementList.Count - 1))
         {
             return;
@@ -144,6 +141,12 @@ public class MenuController : MySingleton<MenuController>
     }
 
 
+    private void OnSceneLoaded(Scene _scene, LoadSceneMode _loadSceneMode)
+    {
+        OnMenuModeChange();
+    }
+
+
     public void SetMenuMode(MenuMode _newMode)
     {
         if (m_menuMode == _newMode)
@@ -152,7 +155,6 @@ public class MenuController : MySingleton<MenuController>
         }
 
         m_menuMode = _newMode;
-        m_playerInput.enabled = (m_menuMode != MenuMode.NONE);
 
         OnMenuModeChange();
     }
@@ -232,11 +234,6 @@ public class MenuController : MySingleton<MenuController>
 
     public void OnSelectNext(InputAction.CallbackContext _context)
     {
-        if (!_context.started)
-        {
-            return;
-        }
-
         if (isListEmpty)
         {
             LogUtils.LogWarning("Cannot navigate empty menu");
@@ -247,11 +244,6 @@ public class MenuController : MySingleton<MenuController>
     }
     public void OnSelectPrevious(InputAction.CallbackContext _context)
     {
-        if (!_context.started)
-        {
-            return;
-        }
-
         if (isListEmpty)
         {
             LogUtils.LogWarning("Cannot navigate empty menu");
@@ -263,11 +255,6 @@ public class MenuController : MySingleton<MenuController>
 
     public void OnInteract(InputAction.CallbackContext _context)
     {
-        if (!_context.canceled)
-        {
-            return;
-        }
-
         InteractWithSelectedElement();
     }
 }

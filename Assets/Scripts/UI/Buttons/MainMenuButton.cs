@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class MainMenuButton : UIButton<MainMenuButton.MainMenuButtonType>
 {
@@ -58,8 +57,7 @@ public class MainMenuButton : UIButton<MainMenuButton.MainMenuButtonType>
 
     private void StartGame()
     {
-        SceneManager.LoadScene("Pizzeria");
-        MenuController.s_Instance.SetMenuMode(MenuController.MenuMode.NONE);
+        GameManager.s_Instance.StartGame();
     }
     private void QuitGame()
     {
@@ -102,10 +100,10 @@ public class MainMenuButton : UIButton<MainMenuButton.MainMenuButtonType>
 
         switch (base.ButtonType)
         {
-            case MainMenuButtonType.PLAY: StartGame();   break;
+            case MainMenuButtonType.PLAY:    StartGame();   break;
             case MainMenuButtonType.CREDITS: ShowCredits(); break;
-            case MainMenuButtonType.BACK: HideCredits(); break;
-            case MainMenuButtonType.QUIT: QuitGame();    break;
+            case MainMenuButtonType.BACK:    HideCredits(); break;
+            case MainMenuButtonType.QUIT:    QuitGame();    break;
             default: break;
         }
     }
